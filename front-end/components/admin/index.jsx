@@ -1,8 +1,17 @@
+import AdminLayout from "../shared/admin-layout";
+
 const Admin = () => {
     return (
-        <div>
-            <h1>Welcome to the Admin</h1>
-        </div>
+        <AdminLayout>
+            <div>
+                <h1
+                    style={{
+                        fontFamily: 'bela-bold'
+                    }}
+                    className="text-5xl"
+                >Welcome to the Admin</h1>
+            </div>
+        </AdminLayout>
     )
 }
 

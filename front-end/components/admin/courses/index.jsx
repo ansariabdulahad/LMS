@@ -4,7 +4,7 @@ const Courses = () => {
     return (
         <AdminLayout>
             <div>
-                <h1 className="text-green-500">Welcome to the courses</h1>
+                <h1 className="text-2xl text-red-500">Welcome to the courses</h1>
             </div>
         </AdminLayout>
     )
