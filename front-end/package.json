@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.3.7",
+    "animate.css": "^4.1.1",
     "antd": "^5.19.3",
     "next": "14.2.5",
     "react": "^18",

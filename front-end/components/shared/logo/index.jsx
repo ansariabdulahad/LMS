@@ -1,3 +1,4 @@
+'use client';
 import { DingdingOutlined } from "@ant-design/icons";
 import { Button } from "antd";
 
