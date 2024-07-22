@@ -9,8 +9,8 @@ const { Item } = Form;
 const Login = () => {
 
     // get values when form submitted
-    const onFinish = (data) => {
-        console.log(data);
+    const onFinish = (values) => {
+        console.log(values);
     }
 
     return (
@@ -89,8 +89,10 @@ const Login = () => {
                     <p>Don't have an account?</p>
                     <Link
                         href={'/register'}
-                        className="font-semibold text-indigo-600"
-                    >Register Now</Link>
+                        legacyBehavior
+                    >
+                        <a className="font-semibold text-indigo-600">Register Now</a>
+                    </Link>
                 </div>
             </div>
         </div>
