@@ -1,18 +1,87 @@
-import { PlusOutlined } from "@ant-design/icons";
+import { BellOutlined, LogoutOutlined, MailOutlined, SettingOutlined, UserOutlined } from "@ant-design/icons";
 import AdminLayout from "../shared/admin-layout";
-import { Button } from "antd";
+import { Avatar, Badge, Button, Dropdown } from "antd";
+import Link from "next/link";
 
 const Admin = () => {
 
+    // Toolbar items for dropdown
+    const items = [
+        {
+            key: '1',
+            label: (
+                <Link href={"#"} legacyBehavior>
+                    <a
+                        href="/profile"
+                        className="flex items-center gap-x-2"
+                    >
+                        <UserOutlined />
+                        Profile
+                    </a>
+                </Link>
+            )
+        },
+        {
+            key: '2',
+            label: (
+                <Link href={"#"} legacyBehavior>
+                    <a
+                        href="/settings"
+                        className="flex items-center gap-x-2"
+                    >
+                        <SettingOutlined />
+                        Settings
+                    </a>
+                </Link>
+            )
+        },
+        {
+            key: '3',
+            label: (
+                <Link href={"#"} legacyBehavior>
+                    <a
+                        href="/logout"
+                        className="flex items-center gap-x-2"
+                    >
+                        <LogoutOutlined />
+                        Logout
+                    </a>
+                </Link>
+            )
+        }
+    ]
+
     // Toolbar component coding
     const Toolbar = () => (
-        <Button
-            type="default"
-            className="bg-red-600"
-            size="large"
-            icon={<PlusOutlined />}
-            shape="circle"
-        />
+        <>
+            <>
+                <Button
+                    icon={<MailOutlined />}
+                    className="bg-green-100 text-green-600"
+                    size="large"
+                    shape="circle"
+                />
+                <Button
+                    icon={
+                        <Badge count={5}>
+                            <BellOutlined />
+                        </Badge>
+                    }
+                    className="bg-orange-100 text-orange-600"
+                    size="large"
+                    shape="circle"
+                />
+                <Dropdown
+                    menu={{
+                        items,
+                    }}
+                    placement="bottomRight"
+                    arrow
+                >
+                    <Avatar className="bg-red-100 text-red-600" size={'large'}>A</Avatar>
+                </Dropdown>
+            </>
+        </>
     )
 
     return (
