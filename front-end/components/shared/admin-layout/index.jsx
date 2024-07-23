@@ -2,7 +2,7 @@
 import { Button, Layout, Menu, Spin } from 'antd';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { DashboardOutlined, FileOutlined, PicCenterOutlined, VideoCameraOutlined } from '@ant-design/icons';
+import { AlertOutlined, DashboardOutlined, FileOutlined, PicCenterOutlined, SettingOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import Logo from '../logo';
 
 const { Sider, Content, Header } = Layout;
@@ -26,9 +26,24 @@ const AdminLayout = ({ children, title = null, toolbar = null }) => {
             'icon': <VideoCameraOutlined />
         },
         {
+            'label': 'Students',
+            'href': '/admin/students',
+            'icon': <UserOutlined />
+        },
+        {
             'label': 'Files & Media',
             'href': '/admin/files',
             'icon': <FileOutlined />
+        },
+        {
+            'label': 'Sales & Revenue',
+            'href': '/admin/sales',
+            'icon': <AlertOutlined />
+        },
+        {
+            'label': 'Settings',
+            'href': '/admin/settings',
+            'icon': <SettingOutlined />
         }
     ];
 
