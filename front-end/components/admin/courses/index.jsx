@@ -1,8 +1,26 @@
+'use client';
+import { Button } from "antd";
 import AdminLayout from "../../shared/admin-layout";
+import { PlusOutlined } from "@ant-design/icons";
 
 const Courses = () => {
+
+    // Toolbar component coding
+    const Toolbar = () => (
+        <Button
+            type="primary"
+            className="bg-indigo-600"
+            size="large"
+            style={{ borderRadius: 0 }}
+            icon={<PlusOutlined />}
+        >New Course</Button>
+    )
+
     return (
-        <AdminLayout>
+        <AdminLayout
+            title={'Courses'}
+            toolbar={<Toolbar />}
+        >
             <div>
                 <h1 className="text-2xl text-red-500">Welcome to the courses</h1>
             </div>

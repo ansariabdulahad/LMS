@@ -2,15 +2,15 @@
 import { Button, Layout, Menu, Spin } from 'antd';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { DashboardOutlined, PicCenterOutlined, VideoCameraOutlined } from '@ant-design/icons';
+import { DashboardOutlined, FileOutlined, PicCenterOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import Logo from '../logo';
 
 const { Sider, Content, Header } = Layout;
 const { Item } = Menu;
 
-const AdminLayout = ({ children }) => {
+const AdminLayout = ({ children, title = null, toolbar = null }) => {
     // states variables collection
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
     const [loading, setLoading] = useState(true);
 
     // Menus data
@@ -24,13 +24,18 @@ const AdminLayout = ({ children }) => {
             'label': 'Courses',
             'href': '/admin/courses',
             'icon': <VideoCameraOutlined />
+        },
+        {
+            'label': 'Files & Media',
+            'href': '/admin/files',
+            'icon': <FileOutlined />
         }
     ];
 
     useEffect(() => {
         let releaseTimer = setTimeout(() => {
             setLoading(false);
-        }, 2000);
+        }, 500);
 
         return () => {
             clearTimeout(releaseTimer);
@@ -53,6 +58,9 @@ const AdminLayout = ({ children }) => {
                 collapsible
                 className='min-h-screen'
             >
+                <div className='py-4'>
+                    <Logo />
+                </div>
                 <Menu>
                     {
                         menus.map((item, index) => (
@@ -72,11 +80,17 @@ const AdminLayout = ({ children }) => {
                         <Button
                             onClick={() => setOpen(!open)}
                             icon={<PicCenterOutlined />}
+                            className='mx-3'
                         />
-                        <Logo />
+                        <div>
+                            {
+                                title &&
+                                <h1 className='text-lg font-semibold'>{title}</h1>
+                            }
+                        </div>
                     </div>
-                    <div>
-
+                    <div className='flex items-center gap-x-4'>
+                        {toolbar && toolbar}
                     </div>
                 </Header>
                 <Content className='p-8'>
