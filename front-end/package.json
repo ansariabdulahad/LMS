@@ -12,8 +12,10 @@
     "@ant-design/icons": "^5.3.7",
     "animate.css": "^4.1.1",
     "antd": "^5.19.3",
+    "apexcharts": "^3.51.0",
     "next": "14.2.5",
     "react": "^18",
+    "react-apexcharts": "^1.4.1",
     "react-dom": "^18"
   },
   "devDependencies": {
