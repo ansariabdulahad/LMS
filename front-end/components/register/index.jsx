@@ -1,5 +1,4 @@
 'use client';
-import Image from "next/image";
 import Logo from "../shared/logo"
 import { Button, Divider, Form, Input, Select, Tag } from "antd"
 import Link from "next/link";

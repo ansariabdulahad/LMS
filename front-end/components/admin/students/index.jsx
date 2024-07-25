@@ -230,11 +230,10 @@ const Students = () => {
                                 <div className="flex mb-5 justify-between items-center">
                                     <div className="flex items-center gap-x-2">
                                         <Button
-                                            icon={<MoneyCollectOutlined />}
                                             shape="circle"
                                             type="text"
-                                            className="bg-green-200 text-green-600"
-                                        />
+                                            className="bg-green-200 text-green-600 text-xl font-bold"
+                                        >₹</Button>
                                         <p className="font-semibold">Payments</p>
                                     </div>
                                     <p className="font-semibold text-zinc-500">{student.payment}</p>
