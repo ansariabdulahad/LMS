@@ -258,7 +258,7 @@ const Admin = () => {
                             </div>
                         </div>
                     </Card>
-                    <Card className="shadow col-span-2">
+                    <Card className="shadow md:col-span-2">
                         <ReactApexChart
                             options={revenue.options}
                             series={revenue.series}
