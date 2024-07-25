@@ -105,6 +105,9 @@ const Sales = () => {
                     dataSource={sales}
                     columns={columns}
                     className="shadow-lg"
+                    scroll={{
+                        x: 1300
+                    }}
                 />
             </div>
         </AdminLayout>
