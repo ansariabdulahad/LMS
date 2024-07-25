@@ -144,7 +144,7 @@ const Admin = () => {
             title="Dashboard"
             toolbar={<Toolbar />}
         >
-            <div>
+            <div className="animate__animated animate__zoomIn">
                 <div className="grid md:grid-cols-4 gap-6">
                     <Card className="shadow">
                         <div className="flex justify-around items-center">
