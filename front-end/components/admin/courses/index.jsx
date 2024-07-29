@@ -2,18 +2,21 @@
 import { Button } from "antd";
 import AdminLayout from "../../shared/admin-layout";
 import { PlusOutlined } from "@ant-design/icons";
+import Link from "next/link";
 
 const Courses = () => {
 
     // Toolbar component coding
     const Toolbar = () => (
-        <Button
-            type="primary"
-            className="bg-indigo-600"
-            size="large"
-            style={{ borderRadius: 0 }}
-            icon={<PlusOutlined />}
-        >New Course</Button>
+        <Link href={'/admin/courses/new'}>
+            <Button
+                type="primary"
+                className="bg-indigo-600"
+                size="large"
+                style={{ borderRadius: 0 }}
+                icon={<PlusOutlined />}
+            >New Course</Button>
+        </Link>
     )
 
     return (
