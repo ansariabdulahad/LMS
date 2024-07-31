@@ -100,7 +100,7 @@ const AdminLayout = ({ children, title = null, toolbar = null }) => {
                         <div>
                             {
                                 title &&
-                                <h1 className='text-lg font-semibold'>{title}</h1>
+                                <h1 className='text-lg font-semibold capitalize'>{title}</h1>
                             }
                         </div>
                     </div>
