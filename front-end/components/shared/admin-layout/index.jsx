@@ -1,8 +1,8 @@
 'use client';
-import { Breadcrumb, Button, Layout, Menu, Spin } from 'antd';
+import { Avatar, Badge, Breadcrumb, Button, Dropdown, Layout, Menu, Spin } from 'antd';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { AlertOutlined, DashboardOutlined, FileOutlined, PicCenterOutlined, SettingOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
+import { AlertOutlined, BellOutlined, DashboardOutlined, FileOutlined, LogoutOutlined, MailOutlined, PicCenterOutlined, SettingOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import Logo from '../logo';
 import { usePathname } from 'next/navigation';
 
@@ -50,6 +50,52 @@ const AdminLayout = ({ children, title = null, toolbar = null }) => {
             'icon': <SettingOutlined />
         }
     ];
+
+    // Toolbar items for dropdown
+    const items = [
+        {
+            key: '1',
+            label: (
+                <Link href={"#"} legacyBehavior>
+                    <a
+                        href="/profile"
+                        className="flex items-center gap-x-2"
+                    >
+                        <UserOutlined />
+                        Profile
+                    </a>
+                </Link>
+            )
+        },
+        {
+            key: '2',
+            label: (
+                <Link href={"#"} legacyBehavior>
+                    <a
+                        href="/settings"
+                        className="flex items-center gap-x-2"
+                    >
+                        <SettingOutlined />
+                        Settings
+                    </a>
+                </Link>
+            )
+        },
+        {
+            key: '3',
+            label: (
+                <Link href={"#"} legacyBehavior>
+                    <a
+                        href="/logout"
+                        className="flex items-center gap-x-2"
+                    >
+                        <LogoutOutlined />
+                        Logout
+                    </a>
+                </Link>
+            )
+        }
+    ]
 
     // useEffect coding for header and sider controlling
     useEffect(() => {
@@ -147,6 +193,31 @@ const AdminLayout = ({ children, title = null, toolbar = null }) => {
                     </div>
                     <div className='flex items-center gap-x-4'>
                         {toolbar && toolbar}
+                        <Button
+                            icon={<MailOutlined />}
+                            className="bg-green-100 text-green-600"
+                            size="large"
+                            shape="circle"
+                        />
+                        <Button
+                            icon={
+                                <Badge count={5}>
+                                    <BellOutlined />
+                                </Badge>
+                            }
+                            className="bg-orange-100 text-orange-600"
+                            size="large"
+                            shape="circle"
+                        />
+                        <Dropdown
+                            menu={{
+                                items,
+                            }}
+                            placement="bottomRight"
+                            arrow
+                        >
+                            <Avatar className="bg-red-100 text-red-600" size={'large'}>A</Avatar>
+                        </Dropdown>
                     </div>
                 </Header>
                 <Content className='flex flex-col gap-y-6 py-6 px-8 min-h-screen'>
