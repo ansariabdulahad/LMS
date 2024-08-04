@@ -1,7 +1,7 @@
 'use client';
 import AdminLayout from "@/components/shared/admin-layout";
-import { DeleteFilled, EditFilled, PlusOutlined } from "@ant-design/icons";
-import { Button, Drawer, Modal, Table } from "antd";
+import { CaretRightOutlined, DeleteFilled, EditFilled, PlusOutlined } from "@ant-design/icons";
+import { Button, Collapse, Drawer, Modal, Table, theme } from "antd";
 import { useParams } from "next/navigation";
 import { createContext, useState, useContext, useMemo } from "react";
 import { HolderOutlined } from '@ant-design/icons';
@@ -14,6 +14,8 @@ import {
     verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import Uploader from "../../files/upload";
+import ListEl from "../../files/list";
 
 const RowContext = createContext({});
 
@@ -102,8 +104,11 @@ const Curriculum = () => {
     const { curriculum } = useParams();
     // State collection
     const [open, setOpen] = useState(false);
-    const [drawerOpen, setDrawerOpen] = useState(false);
     const [dataSource, setDataSource] = useState(initialData);
+    const [drawerOpen, setDrawerOpen] = useState({
+        open: false,
+        title: null
+    });
 
     const columns = [
         {
@@ -115,7 +120,17 @@ const Curriculum = () => {
         {
             title: 'Topics',
             dataIndex: 'title',
-            render: (text) => <a href="#" onClick={() => setDrawerOpen(true)}>{text}</a>
+            render: (text) =>
+                <a
+                    href="#"
+                    onClick={() =>
+                        setDrawerOpen({
+                            title: text,
+                            open: true
+                        })
+                    }>
+                    {text}
+                </a>
         },
         {
             title: 'Lessons',
@@ -170,6 +185,119 @@ const Curriculum = () => {
         );
     }
 
+    // lessoncontent component used in lesson component
+    const LessonContent = () => {
+        // hooks collection for lesson component
+        const [fileDialog, setFileDialog] = useState(false);
+
+        const lessonDataSource = [
+            {
+                key: '1',
+                name: 'Mike',
+                age: 32,
+                address: '10 Downing Street',
+            },
+            {
+                key: '2',
+                name: 'John',
+                age: 42,
+                address: '10 Downing Street',
+            },
+        ];
+
+        const lessonColumns = [
+            {
+                title: 'Name',
+                dataIndex: 'name',
+                key: 'name',
+            },
+            {
+                title: 'Age',
+                dataIndex: 'age',
+                key: 'age',
+            },
+            {
+                title: 'Address',
+                dataIndex: 'address',
+                key: 'address',
+            },
+        ];
+
+        return (
+            <div className="shadow-lg flex flex-col gap-y-6">
+                <Table
+                    dataSource={lessonDataSource}
+                    columns={lessonColumns}
+                    pagination={false}
+                />
+                <Button
+                    icon={<PlusOutlined />}
+                    type="primary"
+                    className="bg-green-500 w-fit mx-3 mb-3"
+                    style={{ borderRadius: 0 }}
+                    onClick={() => setFileDialog(true)}
+                >
+                    Media
+                </Button>
+
+                <Modal
+                    open={fileDialog}
+                    onCancel={() => setFileDialog(false)}
+                    footer={false}
+                >
+                    <div className="flex flex-col gap-y-6 mt-6">
+                        <Uploader />
+                        <ListEl />
+                    </div>
+                </Modal>
+            </div>
+        )
+    }
+
+    // Lessons component for drawer content
+    const Lessons = () => {
+        const { token } = theme.useToken();
+        const panelStyle = {
+            marginBottom: 24,
+            background: token.colorFillAlter,
+            borderRadius: token.borderRadiusLG,
+            border: '1px solid #f2f2f2',
+        };
+
+        const getItems = (panelStyle) => [
+            {
+                key: '1',
+                label: 'This is panel header 1',
+                children: <LessonContent />,
+                style: panelStyle,
+            },
+            {
+                key: '2',
+                label: 'This is panel header 2',
+                children: <LessonContent />,
+                style: panelStyle,
+            },
+            {
+                key: '3',
+                label: 'This is panel header 3',
+                children: <LessonContent />,
+                style: panelStyle,
+            },
+        ];
+
+        return (
+            <Collapse
+                bordered={false}
+                defaultActiveKey={['1']}
+                expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
+                style={{
+                    background: token.colorBgContainer,
+                }}
+                items={getItems(panelStyle)}
+            />
+        )
+    }
+
     return (
 
         <AdminLayout
@@ -205,14 +333,22 @@ const Curriculum = () => {
             </Modal>
 
             <Drawer
-                title="Basic Drawer"
-                onClose={() => setDrawerOpen(false)}
-                open={drawerOpen}
+                title={drawerOpen.title}
+                onClose={() => setDrawerOpen({ ...drawerOpen, open: false })}
+                open={drawerOpen.open}
                 width={920}
+                extra={
+                    <Button
+                        icon={<PlusOutlined />}
+                        type="primary"
+                        className="bg-violet-500 text-white"
+                        style={{ borderRadius: 0 }}
+                    >
+                        Add Lesson
+                    </Button>
+                }
             >
-                <p>Some contents...</p>
-                <p>Some contents...</p>
-                <p>Some contents...</p>
+                <Lessons />
             </Drawer>
         </AdminLayout>
     );
