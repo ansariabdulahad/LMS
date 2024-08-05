@@ -182,7 +182,7 @@ const AdminLayout = ({ children, title = null, toolbar = null }) => {
                         <Button
                             onClick={() => setOpen(!open)}
                             icon={<PicCenterOutlined />}
-                            className='mx-3'
+                            className='mx-2'
                         />
                         <div>
                             {
