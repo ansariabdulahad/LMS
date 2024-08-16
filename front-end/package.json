@@ -22,7 +22,8 @@
     "react": "^18",
     "react-apexcharts": "^1.4.1",
     "react-dom": "^18",
-    "react-infinite-scroll-component": "^6.1.0"
+    "react-infinite-scroll-component": "^6.1.0",
+    "swr": "^2.2.5"
   },
   "devDependencies": {
     "eslint": "^8",

@@ -1,15 +1,41 @@
 'use client';
 import AdminLayout from "@/components/shared/admin-layout";
-import { EditFilled, PlusOutlined, UserOutlined } from "@ant-design/icons";
+import { CloseOutlined, EditFilled, PlusOutlined, SyncOutlined, UserOutlined } from "@ant-design/icons";
 import { Avatar, Button, Card, Empty, Form, Input, Modal, Tag } from "antd";
 import axios from "axios";
 import { useState } from "react";
+import useSWR, { mutate } from "swr";
+
+// httpRequest function for fetching data while page rendering
+const httpRequest = async (url) => {
+    try {
+        const { data } = await axios({
+            method: "GET",
+            url
+        });
+        return data;
+    } catch (error) {
+        return null;
+    }
+}
 
 const Settings = () => {
     // hook collection
     const [open, setOpen] = useState(false);
     const [edit, setEdit] = useState(false);
     const [notifications, setNotications] = useState([]);
+    // handling global state for loading when delete opration performed
+    const [loading, setLoading] = useState({
+        index: null,
+        state: false,
+        type: null
+    });
+
+    // useSwr for data fetching while page rendering
+    const { data, error } = useSWR(
+        'http://localhost:8000/notification/',
+        httpRequest
+    );
 
     // createnotification function to get form values
     const createNotification = (values) => {
@@ -17,24 +43,53 @@ const Settings = () => {
         setOpen(false);
     }
 
-    // Testing backend api to fetch data using axios
-    const test = async () => {
+    // delete notifications api called
+    const deleteNotification = async (id, index) => {
+
+        setLoading({
+            index: index,
+            state: true,
+            type: 'notification'
+        });
+
         try {
-            const response = await axios({
-                'method': 'GET',
-                'url': 'http://localhost:8000/notification/'
+            await axios({
+                method: 'DELETE',
+                url: `http://localhost:8000/notification/${id}/`
             });
-            console.log(response.data);
+
+            setLoading({
+                state: false,
+                type: null
+            });
+
+            mutate('http://localhost:8000/notification/');
 
         } catch (error) {
+            setLoading({
+                state: false,
+                type: null
+            });
             console.log(error.message);
-
         }
     }
 
+    // Testing backend api to fetch data using axios
+    // const test = async () => {
+    //     try {
+    //         const response = await axios({
+    //             'method': 'GET',
+    //             'url': 'http://localhost:8000/notification/'
+    //         });
+    //         console.log(response.data);
+    //     } catch (error) {
+    //         console.log(error.message);
+    //     }
+    // }
+
     return (
         <AdminLayout title={'Settings'}>
-            <Button onClick={test}>Testing API</Button>
+
             <div className="grid md:grid-cols-3 gap-6">
                 <Card
                     title="Profile"
@@ -130,14 +185,30 @@ const Settings = () => {
                     title="Notifications"
                     className="shadow md:col-span-2"
                 >
-                    <div>
+                    <div className="flex items-center justify-center flex-wrap">
                         {
-                            notifications.length === 0 &&
+                            data && data.length === 0 &&
                             <Empty />
                         }
                         {
-                            notifications.map((item, index) => (
-                                <Tag className="mb-2" key={index} color={item.color}>
+                            data && data.map((item, index) => (
+                                <Tag
+                                    className="mb-2 flex flex-row-reverse gap-x-2"
+                                    key={index}
+                                    color={item.color}
+                                    icon={
+                                        (
+                                            loading.state &&
+                                            loading.type === 'notification' &&
+                                            loading.index === index
+                                        )
+                                            ? <SyncOutlined spin />
+                                            : <CloseOutlined
+                                                onClick={() => deleteNotification(item.id, index)}
+                                            />
+
+                                    }
+                                >
                                     {item.title}
                                 </Tag>
                             ))
