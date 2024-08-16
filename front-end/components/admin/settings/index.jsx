@@ -2,6 +2,7 @@
 import AdminLayout from "@/components/shared/admin-layout";
 import { EditFilled, PlusOutlined, UserOutlined } from "@ant-design/icons";
 import { Avatar, Button, Card, Empty, Form, Input, Modal, Tag } from "antd";
+import axios from "axios";
 import { useState } from "react";
 
 const Settings = () => {
@@ -16,8 +17,24 @@ const Settings = () => {
         setOpen(false);
     }
 
+    // Testing backend api to fetch data using axios
+    const test = async () => {
+        try {
+            const response = await axios({
+                'method': 'GET',
+                'url': 'http://localhost:8000/notification/'
+            });
+            console.log(response.data);
+
+        } catch (error) {
+            console.log(error.message);
+
+        }
+    }
+
     return (
         <AdminLayout title={'Settings'}>
+            <Button onClick={test}>Testing API</Button>
             <div className="grid md:grid-cols-3 gap-6">
                 <Card
                     title="Profile"
