@@ -1,7 +1,7 @@
 'use client';
 import AdminLayout from "@/components/shared/admin-layout";
 import { CloseOutlined, EditFilled, PlusOutlined, SyncOutlined, UserOutlined } from "@ant-design/icons";
-import { Avatar, Button, Card, Empty, Form, Input, Modal, Tag } from "antd";
+import { Avatar, Button, Card, Empty, Form, Input, message, Modal, Tag } from "antd";
 import axios from "axios";
 import { useState } from "react";
 import useSWR, { mutate } from "swr";
@@ -21,9 +21,10 @@ const httpRequest = async (url) => {
 
 const Settings = () => {
     // hook collection
+    const [form] = Form.useForm();
     const [open, setOpen] = useState(false);
     const [edit, setEdit] = useState(false);
-    const [notifications, setNotications] = useState([]);
+    const [messageApi, contextHolder] = message.useMessage(); // antd message pattern
     // handling global state for loading when delete opration performed
     const [loading, setLoading] = useState({
         index: null,
@@ -38,9 +39,38 @@ const Settings = () => {
     );
 
     // createnotification function to get form values
-    const createNotification = (values) => {
-        setNotications([...notifications, values]);
-        setOpen(false);
+    const createNotification = async (values) => {
+        setLoading({
+            type: 'create',
+            state: true
+        })
+        try {
+            await axios({
+                method: 'POST',
+                url: 'http://localhost:8000/notification/',
+                data: values
+            });
+            mutate("http://localhost:8000/notification/");
+            setLoading({
+                type: null,
+                state: false
+            })
+            form.resetFields();
+            messageApi.open({
+                type: 'success',
+                content: "Notification created successfully."
+            })
+            setOpen(false);
+        } catch (error) {
+            messageApi.open({
+                type: 'error',
+                content: "Unable to create notification, please try again !"
+            });
+            setLoading({
+                type: null,
+                state: false
+            })
+        }
     }
 
     // delete notifications api called
@@ -63,6 +93,10 @@ const Settings = () => {
                 type: null
             });
 
+            messageApi.open({
+                type: 'success',
+                content: "Notification deleted successfully."
+            })
             mutate('http://localhost:8000/notification/');
 
         } catch (error) {
@@ -240,7 +274,9 @@ const Settings = () => {
                 onCancel={() => setOpen(false)}
                 footer={false}
             >
-                <Form onFinish={createNotification}>
+                <Form
+                    form={form}
+                    onFinish={createNotification}>
                     <Form.Item
                         name='title'
                         rules={[{ required: true }]}
@@ -258,16 +294,28 @@ const Settings = () => {
                         />
                     </Form.Item>
                     <Form.Item>
-                        <Button
-                            className="bg-violet-500"
-                            type="primary"
-                            htmlType="submit"
-                        >
-                            create
-                        </Button>
+                        {
+                            (loading.state && loading.type === "create")
+                                ? <Button
+                                    className="bg-violet-500 text-white"
+                                    type="text"
+                                    htmlType="button"
+                                    loading
+                                >
+                                    processing...
+                                </Button>
+                                : <Button
+                                    className="bg-violet-500"
+                                    type="primary"
+                                    htmlType="submit"
+                                >
+                                    create
+                                </Button>
+                        }
                     </Form.Item>
                 </Form>
             </Modal>
+            {contextHolder}
         </AdminLayout>
     )
 }
