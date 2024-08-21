@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'notification',
     'rest_framework_simplejwt',
+    'authentication',
 ]
 
 MIDDLEWARE = [
@@ -141,6 +142,8 @@ SIMPLE_JWT = {
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
+
+AUTH_USER_MODEL = 'authentication.Auth'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
