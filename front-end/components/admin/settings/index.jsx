@@ -6,6 +6,10 @@ import axios from "axios";
 import { useState } from "react";
 import useSWR, { mutate } from "swr";
 
+// setting base url using axios
+const { NEXT_PUBLIC_ENDPOINT } = process.env;
+axios.defaults.baseURL = NEXT_PUBLIC_ENDPOINT || "http://localhost:8000";
+
 // httpRequest function for fetching data while page rendering
 const httpRequest = async (url) => {
     try {
@@ -34,7 +38,7 @@ const Settings = () => {
 
     // useSwr for data fetching while page rendering
     const { data, error } = useSWR(
-        'http://localhost:8000/notification/',
+        '/notification/',
         httpRequest
     );
 
@@ -47,10 +51,10 @@ const Settings = () => {
         try {
             await axios({
                 method: 'POST',
-                url: 'http://localhost:8000/notification/',
+                url: '/notification/',
                 data: values
             });
-            mutate("http://localhost:8000/notification/");
+            mutate("/notification/");
             setLoading({
                 type: null,
                 state: false
@@ -85,7 +89,7 @@ const Settings = () => {
         try {
             await axios({
                 method: 'DELETE',
-                url: `http://localhost:8000/notification/${id}/`
+                url: `/notification/${id}/`
             });
 
             setLoading({
@@ -97,7 +101,7 @@ const Settings = () => {
                 type: 'success',
                 content: "Notification deleted successfully."
             })
-            mutate('http://localhost:8000/notification/');
+            mutate('/notification/');
 
         } catch (error) {
             setLoading({
@@ -113,7 +117,7 @@ const Settings = () => {
     //     try {
     //         const response = await axios({
     //             'method': 'GET',
-    //             'url': 'http://localhost:8000/notification/'
+    //             'url': '/notification/'
     //         });
     //         console.log(response.data);
     //     } catch (error) {
