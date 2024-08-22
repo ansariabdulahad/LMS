@@ -5,6 +5,7 @@ from .models import Auth
 # Register your models here.
 class AuthAdmin(UserAdmin) :
     list_display = (
+        'id',
         'username',
         'password',
         'email',
