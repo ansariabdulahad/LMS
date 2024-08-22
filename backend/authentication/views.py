@@ -36,6 +36,7 @@ class Register(APIView) :
             user.set_password(req.data.get('password'))
             user.is_active = True
             user.save()
+            user.password = None
             return Response(
                 serializer.data, 
                 status=status.HTTP_200_OK

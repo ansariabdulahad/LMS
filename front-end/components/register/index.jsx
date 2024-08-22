@@ -1,11 +1,22 @@
 'use client';
 import Logo from "../shared/logo"
-import { Button, Divider, Form, Input, Select, Tag } from "antd"
+import { Button, Divider, Form, Input, message, Select, Tag } from "antd"
 import Link from "next/link";
+import axios from "axios";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
+const { NEXT_PUBLIC_ENDPOINT } = process.env;
 const { Item } = Form;
 
+axios.defaults.baseURL = NEXT_PUBLIC_ENDPOINT || "http://localhost:8000";
+
 const Register = () => {
+
+    // handle state
+    const [loading, setLoading] = useState(false);
+    const [form] = Form.useForm();
+    const router = useRouter();
 
     // for multiple select
     const options = [
@@ -45,8 +56,33 @@ const Register = () => {
     };
 
     // get values when form submitted
-    const onFinish = (values) => {
-        console.log(values);
+    const onFinish = async (values) => {
+        values.username = values.email.split("@")[0].trim();
+        try {
+            setLoading(true);
+            await axios.post('/auth/register/', values);
+            form.resetFields();
+            message.success({
+                content: 'Registration success, Please wait 3 sec !',
+                duration: 3,
+                key: 'reg-success'
+            });
+            setTimeout(() => {
+                router.push('/login');
+            }, 3000);
+        } catch (error) {
+            console.log(error.response.data);
+            const err = error.response.data;
+
+            if (err.hasOwnProperty('email'))
+                return form.setFields([{ name: 'email', errors: err.email }])
+            if (err.hasOwnProperty('mobile'))
+                return form.setFields([{ name: 'mobile', errors: err.mobile }])
+            message.error('Registration failed, please try again !');
+            
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -56,7 +92,7 @@ const Register = () => {
                     <h1 className="font-semibold text-2xl">Say Hi</h1>
                     <Logo />
                 </div>
-                <Form onFinish={onFinish} layout="vertical">
+                <Form onFinish={onFinish} form={form} layout="vertical">
                     <div className="grid md:grid-cols-2 gap-3">
                         <Item
                             name={'fullname'}
@@ -129,7 +165,7 @@ const Register = () => {
                     </div>
                     <div className="grid md:grid-cols-2 gap-3">
                         <Item
-                            name={'father'}
+                            name={'fatherName'}
                             label="Father Name"
                             rules={[
                                 {
@@ -209,12 +245,13 @@ const Register = () => {
                     </div>
                     <Item>
                         <Button
+                            loading={loading}
                             className="w-full bg-indigo-600 text-white font-semibold"
                             size="large"
                             style={{ borderRadius: 0 }}
                             htmlType="submit"
                         >
-                            Register
+                            {loading ? "Processing..." : "Register"}
                         </Button>
                     </Item>
                 </Form>
