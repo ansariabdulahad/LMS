@@ -1,3 +1,5 @@
-const App = () => <h1>welcome to the application</h1>
+import Homepage from "@/components/home";
+
+const App = () => <Homepage />
 
 export default App

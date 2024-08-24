@@ -3,10 +3,19 @@ import Image from "next/image";
 import Logo from "../shared/logo"
 import { Button, Divider, Form, Input } from "antd"
 import Link from "next/link";
+import { signIn, useSession } from "next-auth/react";
+import Loader from "@/app/loading";
+import { redirect } from "next/navigation";
 
 const { Item } = Form;
 
 const Login = () => {
+
+    // handling login events
+    const { data: session, status } = useSession();
+
+    if (status === 'loading') return <Loader />;
+    if (status === 'authenticated') return redirect('/');
 
     // get values when form submitted
     const onFinish = (values) => {
@@ -67,6 +76,7 @@ const Login = () => {
                 <Divider>OR</Divider>
 
                 <Button
+                    onClick={() => signIn('google')}
                     className="py-6 font-semibold"
                     icon={<Image
                         src={'/icons/google.png'}
@@ -76,6 +86,7 @@ const Login = () => {
                     Continue With Google
                 </Button>
                 <Button
+                    onClick={() => signIn('github')}
                     className="py-6 font-semibold"
                     icon={<Image
                         src={'/icons/github.png'}
