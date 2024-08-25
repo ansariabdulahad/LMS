@@ -13,13 +13,15 @@ const Login = () => {
 
     // handling login events
     const { data: session, status } = useSession();
+    console.log("SESSION :: ", session)
 
     if (status === 'loading') return <Loader />;
     if (status === 'authenticated') return redirect('/');
 
     // get values when form submitted
     const onFinish = (values) => {
-        console.log(values);
+        values.username = values.email.split("@")[0];
+        signIn('credentials', values);
     }
 
     return (

@@ -18,6 +18,7 @@
     "antd": "^5.19.3",
     "apexcharts": "^3.51.0",
     "axios": "^1.7.4",
+    "jsonwebtoken": "^9.0.2",
     "next": "14.2.5",
     "next-auth": "^4.24.7",
     "react": "^18",
