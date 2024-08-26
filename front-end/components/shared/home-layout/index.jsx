@@ -139,7 +139,7 @@ const HomeLayout = ({ children, title = null, toolbar = <Toolbar /> }) => {
                 }}
             >
                 <Logo />
-                <div className='flex justify-center items-center gap-x-4 hidden md:block'>
+                <div className='justify-center items-center gap-x-4 hidden md:block'>
                     {toolbar && toolbar}
                     <Dropdown
                         menu={{
@@ -151,7 +151,7 @@ const HomeLayout = ({ children, title = null, toolbar = <Toolbar /> }) => {
                         <Avatar className="bg-red-100 text-red-600 mx-2" size={'large'}>A</Avatar>
                     </Dropdown>
                 </div>
-                <div className='md:hidden block flex items-center'>
+                <div className='md:hidden block items-center'>
                     <Button
                         onClick={() => setOpen(true)}
                         icon={<PicCenterOutlined />}
