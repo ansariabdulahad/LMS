@@ -2,7 +2,7 @@
 import { DingdingOutlined } from "@ant-design/icons";
 import { Button } from "antd";
 
-const Logo = ({ size = 30 }) => {
+const Logo = ({ size = 30, text }) => {
     return (
         <Button
             icon={<DingdingOutlined
@@ -14,7 +14,7 @@ const Logo = ({ size = 30 }) => {
                 fontSize: size
             }}
         >
-            LMS
+            {text || "LMS"}
         </Button>
     )
 }

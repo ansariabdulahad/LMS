@@ -1,0 +1,119 @@
+[
+    {
+        "one" : [
+            {
+                "title" : "HOTEL MANAGEMENT SYSTEM",
+                "isFree" : true,
+                "link" : "https://www.youtube.com/playlist?list=PLoi8PK3q1sGGJMgqdVISbwxcUjsVrfRXH",
+                "price" : "00.00",
+                "image" : "/project/hotel.png"
+            },
+            {
+                "title" : "CHATBOT DEVELOPMENT",
+                "isFree" : true,
+                "link" : "https://www.youtube.com/playlist?list=PLoi8PK3q1sGEPbSI2fFmsLcXH3iGA2NoI",
+                "price" : "00.00",
+                "image" : "/project/chatbot.png"
+            },
+            {
+                "title" : "YOUTUBE PROJECT",
+                "isFree" : true,
+                "link" : "https://www.youtube.com/playlist?list=PLoi8PK3q1sGEmWqcOCwJK7BDUVWs_ZCr5",
+                "price" : "00.00",
+                "image" : "/project/youtube.png"
+            },
+            {
+                "title" : "REACT+ REDUX PROJECT",
+                "isFree" : true,
+                "link" : "https://www.youtube.com/playlist?list=PLoi8PK3q1sGFC71MuGmgwrKdOxRsgL5Zv",
+                "price" : "00.00",
+                "image" : "/project/react-redux.png"
+            },
+            {
+                "title" : "Quiz App development",
+                "isFree" : true,
+                "link" : "https://www.youtube.com/playlist?list=PLoi8PK3q1sGE-IsDb_HG0mB1y-aeSA-A7",
+                "price" : "00.00",
+                "image" : "/project/quiz.png"
+            }
+        ]
+    },
+    {
+        "one" : [
+            {
+                "title" : "WEATHER APP",
+                "isFree" : true,
+                "link" : "https://youtu.be/MQwDwUdOx-4?si=W96sakIF3JXy5kem",
+                "price" : "00.00",
+                "image" : "/project/weather.png"
+            },
+            {
+                "title" : "RGB COLOR GENERATOR",
+                "isFree" : true,
+                "link" : "https://youtu.be/P9q01hm0V68?si=l7PpFO3B2zVXQjsG",
+                "price" : "00.00",
+                "image" : "/project/rgb.png"
+            },
+            {
+                "title" : "START & STOP WATCH",
+                "isFree" : true,
+                "link" : "https://youtu.be/uKkq-oO819Y?si=L1B0w4qcXTw3qWQB",
+                "price" : "00.00",
+                "image" : "/project/watch.png"
+            },
+            {
+                "title" : "IMAGE SEARCH APP",
+                "isFree" : true,
+                "link" : "https://youtu.be/O12nNO8Janc?si=YeMI_-KxQUK6bfEc",
+                "price" : "00.00",
+                "image" : "/project/image.webp"
+            },
+            {
+                "title" : "ANALOG CLOCK DEVELOPMENT",
+                "isFree" : true,
+                "link" : "https://youtu.be/AbLMTIWKwG4?si=wzSqxDUccDH0cR4P",
+                "price" : "00.00",
+                "image" : "/project/clock.png"
+            }
+        ]
+    },
+    {
+        "one" : [
+            {
+                "title" : " Rock Paper Scissors Game",
+                "isFree" : true,
+                "link" : "https://youtu.be/3CYXSpMI4Pw?si=7nfykhS5wR3PL-T0",
+                "price" : "00.00",
+                "image" : "/project/tik.png"
+            },
+            {
+                "title" : "IMAGE DERIVE",
+                "isFree" : true,
+                "link" : "https://www.youtube.com/playlist?list=PLoi8PK3q1sGElt01VD0WOQyoadvjRMymq",
+                "price" : "00.00",
+                "image" : "/project/derive.png"
+            },
+            {
+                "title" : "SNAKE GAME",
+                "isFree" : true,
+                "link" : "https://www.youtube.com/playlist?list=PLoi8PK3q1sGGsB5Fm_kpbmBrblSxElPcr",
+                "price" : "00.00",
+                "image" : "/project/snake.jpg"
+            },
+            {
+                "title" : "CALCULATOR APP",
+                "isFree" : true,
+                "link" : "https://youtu.be/VuxNeDri14s?si=RcCOJSFSoWozmscz",
+                "price" : "00.00",
+                "image" : "/project/calculator.png"
+            },
+            {
+                "title" : "To-Do App",
+                "isFree" : true,
+                "link" : "https://www.youtube.com/playlist?list=PLoi8PK3q1sGGIVnw3P6AVtG9M02PThghN",
+                "price" : "00.00",
+                "image" : "/project/todo.png"
+            }
+        ]
+    }
+]

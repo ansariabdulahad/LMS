@@ -1,0 +1,62 @@
+[
+    {
+        "name" : "Just For Code",
+        "image" : "/team/d-1.jpeg",
+        "education" : "CSE",
+        "about" : "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Placeat odit cumque doloribus laborum aspernatur magni assumenda quidem.",
+        "media" : [
+            "https://chat.whatsapp.com/IQ4Od7CDaar7zkfmBnMgXf",
+            "https://chat.whatsapp.com/IQ4Od7CDaar7zkfmBnMgXf",
+            "https://chat.whatsapp.com/IQ4Od7CDaar7zkfmBnMgXf",
+            "https://chat.whatsapp.com/IQ4Od7CDaar7zkfmBnMgXf"
+        ]
+    },
+    {
+        "name" : "Mr Zeeshan Khan",
+        "image" : "/team/d-1.jpeg",
+        "education" : "B-Tech",
+        "about" : "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Placeat odit cumque doloribus laborum aspernatur magni assumenda quidem.",
+        "media" : [
+            "https://chat.whatsapp.com/IQ4Od7CDaar7zkfmBnMgXf",
+            "https://chat.whatsapp.com/IQ4Od7CDaar7zkfmBnMgXf",
+            "https://chat.whatsapp.com/IQ4Od7CDaar7zkfmBnMgXf",
+            "https://chat.whatsapp.com/IQ4Od7CDaar7zkfmBnMgXf"
+        ]
+    },
+    {
+        "name" : "Mr Salman Ali",
+        "image" : "/team/d-1.jpeg",
+        "education" : "M-Tech",
+        "about" : "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Placeat odit cumque doloribus laborum aspernatur magni assumenda quidem.",
+        "media" : [
+            "https://chat.whatsapp.com/IQ4Od7CDaar7zkfmBnMgXf",
+            "https://chat.whatsapp.com/IQ4Od7CDaar7zkfmBnMgXf",
+            "https://chat.whatsapp.com/IQ4Od7CDaar7zkfmBnMgXf",
+            "https://chat.whatsapp.com/IQ4Od7CDaar7zkfmBnMgXf"
+        ]
+    },
+    {
+        "name" : "Mrs Nazish Siddique",
+        "image" : "/team/d-2.jpeg",
+        "education" : "PHD",
+        "about" : "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Placeat odit cumque doloribus laborum aspernatur magni assumenda quidem.",
+        "media" : [
+            "https://chat.whatsapp.com/IQ4Od7CDaar7zkfmBnMgXf",
+            "https://chat.whatsapp.com/IQ4Od7CDaar7zkfmBnMgXf",
+            "https://chat.whatsapp.com/IQ4Od7CDaar7zkfmBnMgXf",
+            "https://chat.whatsapp.com/IQ4Od7CDaar7zkfmBnMgXf"
+        ]
+    },
+    {
+        "name" : "Mrs Sifat Fatima",
+        "image" : "/team/d-2.jpeg",
+        "education" : "M-Tech",
+        "about" : "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Placeat odit cumque doloribus laborum aspernatur magni assumenda quidem.",
+        "media" : [
+            "https://chat.whatsapp.com/IQ4Od7CDaar7zkfmBnMgXf",
+            "https://chat.whatsapp.com/IQ4Od7CDaar7zkfmBnMgXf",
+            "https://chat.whatsapp.com/IQ4Od7CDaar7zkfmBnMgXf",
+            "https://chat.whatsapp.com/IQ4Od7CDaar7zkfmBnMgXf"
+        ]
+    }
+]
