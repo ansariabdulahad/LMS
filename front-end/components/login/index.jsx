@@ -13,7 +13,6 @@ const Login = () => {
 
     // handling login events
     const { data: session, status } = useSession();
-    console.log("SESSION :: ", session)
 
     if (status === 'loading') return <Loader />;
     if (status === 'authenticated') return redirect('/');

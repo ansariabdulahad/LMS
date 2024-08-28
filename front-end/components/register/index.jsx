@@ -79,7 +79,7 @@ const Register = () => {
             if (err.hasOwnProperty('mobile'))
                 return form.setFields([{ name: 'mobile', errors: err.mobile }])
             message.error('Registration failed, please try again !');
-            
+
         } finally {
             setLoading(false);
         }
@@ -199,7 +199,7 @@ const Register = () => {
                     </div>
                     <div className="grid md:grid-cols-2 gap-3">
                         <Item
-                            name={'qualification'}
+                            name={'qualifications'}
                             label="Qualification"
                             rules={[
                                 {

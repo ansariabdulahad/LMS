@@ -36,6 +36,7 @@ const authOptions = {
                         NEXT_AUTH_SECRET
                     );
                     return {
+                        name: verified.fullname,
                         ...verified,
                         ...data
                     }

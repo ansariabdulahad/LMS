@@ -2,10 +2,11 @@
 import { Avatar, Badge, Breadcrumb, Button, Drawer, Dropdown, Layout, Menu, Spin } from 'antd';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { AlertOutlined, BellOutlined, BookOutlined, CloseOutlined, ContactsOutlined, DashboardOutlined, EyeOutlined, FileOutlined, HomeOutlined, LogoutOutlined, MailOutlined, PicCenterOutlined, SettingOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
+import { AlertOutlined, BellOutlined, BookOutlined, CloseOutlined, ContactsOutlined, DashboardOutlined, EyeOutlined, FileOutlined, HomeOutlined, LoginOutlined, LogoutOutlined, MailOutlined, PicCenterOutlined, SettingOutlined, SignatureOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import Logo from '../logo';
 import { usePathname } from 'next/navigation';
 import FooterEl from '@/components/footer';
+import { signIn, signOut, useSession } from 'next-auth/react';
 
 const { Footer, Content, Header } = Layout;
 const { Item } = Menu;
@@ -36,7 +37,12 @@ const menus = [
         'label': 'Students',
         'key': '/students',
         'icon': <UserOutlined />
-    }
+    },
+    // {
+    //     'label': 'Logout',
+    //     'key': '/login',
+    //     'icon': <LogoutOutlined />
+    // }
 ];
 
 // Toolbar for homepage menus
@@ -58,6 +64,9 @@ const Toolbar = () => {
 
 const HomeLayout = ({ children, title = null, toolbar = <Toolbar /> }) => {
     // hooks collection
+    const { data: session } = useSession();
+    console.log(session);
+
     // states variables collection
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -67,12 +76,13 @@ const HomeLayout = ({ children, title = null, toolbar = <Toolbar /> }) => {
         {
             key: '1',
             label: (
-                <Link href={"#"} legacyBehavior>
+                session
+                && <Link href={"#"} legacyBehavior>
                     <a
                         href="/profile"
                         className="flex items-center gap-x-2"
                     >
-                        <UserOutlined />
+                        <DashboardOutlined />
                         Profile
                     </a>
                 </Link>
@@ -81,29 +91,46 @@ const HomeLayout = ({ children, title = null, toolbar = <Toolbar /> }) => {
         {
             key: '2',
             label: (
-                <Link href={"#"} legacyBehavior>
-                    <a
-                        href="/settings"
-                        className="flex items-center gap-x-2"
-                    >
-                        <SettingOutlined />
-                        Settings
-                    </a>
-                </Link>
+                session
+                    ? <Link href={"/register"} legacyBehavior>
+                        <a
+                            className="flex items-center gap-x-2"
+                        >
+                            <UserOutlined />
+                            {session?.user.name}
+                        </a>
+                    </Link>
+                    : <Link href="/register" legacyBehavior>
+                        <a
+                            className="flex items-center gap-x-2"
+                        >
+                            <UserOutlined />
+                            Register
+                        </a>
+                    </Link>
             )
         },
         {
             key: '3',
             label: (
-                <Link href={"#"} legacyBehavior>
-                    <a
-                        href="/logout"
-                        className="flex items-center gap-x-2"
-                    >
-                        <LogoutOutlined />
-                        Logout
-                    </a>
-                </Link>
+                session
+                    ? <Link href={"#"} legacyBehavior>
+                        <a
+                            className="flex items-center gap-x-2"
+                            onClick={() => signOut({ callbackUrl: '/login' })}
+                        >
+                            <LogoutOutlined />
+                            Logout
+                        </a>
+                    </Link>
+                    : <Link href={"/login"} legacyBehavior>
+                        <a
+                            className="flex items-center gap-x-2"
+                        >
+                            <LoginOutlined />
+                            Login
+                        </a>
+                    </Link>
             )
         }
     ]
@@ -148,7 +175,13 @@ const HomeLayout = ({ children, title = null, toolbar = <Toolbar /> }) => {
                         placement="bottomRight"
                         arrow
                     >
-                        <Avatar className="bg-red-100 text-red-600 mx-2" size={'large'}>A</Avatar>
+                        {
+                            session
+                                ? session.user.image
+                                    ? <Avatar size={'large'} className='mb-2' src={session.user.image} />
+                                    : <Avatar size={'large'} className='mb-2 text-2xl capitalize font-bold bg-rose-400'>{session?.user.name[0]}</Avatar>
+                                : <Avatar size={'large'} className='mb-2' icon={<UserOutlined />} />
+                        }
                     </Dropdown>
                 </div>
                 <div className='md:hidden block items-center'>
@@ -170,20 +203,43 @@ const HomeLayout = ({ children, title = null, toolbar = <Toolbar /> }) => {
 
             <Drawer
                 open={open}
-                placement='left'
-                closeIcon=""
                 width={260}
+                onClose={() => setOpen(false)}
                 extra={
-                    <Button
-                        type='text'
-                        icon={<CloseOutlined
-                            onClick={() => setOpen(false)}
-                        />}
-                    />
+                    <Dropdown
+                        menu={{
+                            items,
+                        }}
+                        placement="bottomRight"
+                        arrow
+                    >
+                        {
+                            session
+                                ? session.user.image
+                                    ? <Avatar size={'large'} className='mb-2' src={session.user.image} />
+                                    : <Avatar size={'large'} className='mb-2 text-2xl capitalize font-bold bg-rose-400'>{session?.user.name[0]}</Avatar>
+                                : <Avatar size={'large'} className='mb-2' icon={<UserOutlined />} />
+                        }
+                    </Dropdown>
                 }
+                title={<Logo />}
             >
                 <div className='flex flex-col gap-y-4'>
-                    {toolbar && toolbar}
+                    {
+                        menus?.map((item, index) => (
+                            <Link
+                                key={index}
+                                href={item.key}
+                                className='flex items-center gap-4'
+                            >
+                                <Button
+                                    icon={item.icon}
+                                    shape='circle'
+                                />
+                                {item.label}
+                            </Link>
+                        ))
+                    }
                 </div>
             </Drawer>
         </Layout>
