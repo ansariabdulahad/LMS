@@ -5,6 +5,7 @@ import Link from "next/link";
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import HomeLayout from "../shared/home-layout";
 
 const { NEXT_PUBLIC_ENDPOINT } = process.env;
 const { Item } = Form;
@@ -86,189 +87,270 @@ const Register = () => {
     }
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-gray-100 py-6">
-            <div className="animate__animated animate__zoomIn md:w-8/12 flex flex-col gap-y-4 bg-white rounded-lg border p-8">
-                <div className="flex items-center">
-                    <h1 className="font-semibold text-2xl">Say Hi</h1>
-                    <Logo />
-                </div>
-                <Form onFinish={onFinish} form={form} layout="vertical">
-                    <div className="grid md:grid-cols-2 gap-3">
-                        <Item
-                            name={'fullname'}
-                            label="FullName"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Please enter your fullname"
-                                }
-                            ]}
-                        >
-                            <Input
-                                placeholder="FullName"
-                                style={{ borderRadius: 0 }}
-                                size="large"
-                            />
-                        </Item>
-                        <Item
-                            name={'mobile'}
-                            label="Mobile"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Please enter your mobile"
-                                }
-                            ]}
-                        >
-                            <Input
-                                placeholder="+91 9545282408"
-                                style={{ borderRadius: 0 }}
-                                size="large"
-                                type="tel"
-                            />
-                        </Item>
+        <HomeLayout>
+            <div className="flex justify-center items-center min-h-screen bg-gray-100 py-6">
+                <div className="animate__animated animate__zoomIn md:w-8/12 flex flex-col gap-y-4 bg-white rounded-lg border p-8">
+                    <div>
+                        <h1 className="font-semibold text-2xl text-center">Register</h1>
                     </div>
-                    <div className="grid md:grid-cols-2 gap-3">
-                        <Item
-                            name={'email'}
-                            label="Email"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Please enter your email address"
-                                }
-                            ]}
-                        >
-                            <Input
-                                placeholder="Email"
-                                style={{ borderRadius: 0 }}
-                                size="large"
-                            />
-                        </Item>
-                        <Item
-                            name={'password'}
-                            label="Password"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Please enter your password"
-                                }
-                            ]}
-                        >
-                            <Input
-                                placeholder="********"
-                                style={{ borderRadius: 0 }}
-                                size="large"
-                                type="password"
-                            />
-                        </Item>
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-3">
-                        <Item
-                            name={'fatherName'}
-                            label="Father Name"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Please enter your father name"
-                                }
-                            ]}
-                        >
-                            <Input
-                                placeholder="Father Name"
-                                style={{ borderRadius: 0 }}
-                                size="large"
-                            />
-                        </Item>
-                        <Item
-                            name={'dob'}
-                            label="DOB"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Please enter your DOB"
-                                }
-                            ]}
-                        >
-                            <Input
-                                style={{ borderRadius: 0 }}
-                                size="large"
-                                type="date"
-                            />
-                        </Item>
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-3">
-                        <Item
-                            name={'qualifications'}
-                            label="Qualification"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Please select your qualification"
-                                }
-                            ]}
-                        >
-                            <Select
-                                showSearch
-                                placeholder="Select Qualification"
-                                filterOption={(input, option) =>
-                                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                                }
-                                options={[
-                                    { value: '10th', label: 'High School' },
-                                    { value: '12th', label: 'Intermediate' },
-                                    { value: 'ug', label: 'UG' },
-                                    { value: 'pg', label: 'PG' },
+                    <Form onFinish={onFinish} form={form} layout="vertical">
+                        <div className="grid md:grid-cols-2 gap-3">
+                            <Item
+                                name={'fullname'}
+                                label="FullName"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Please enter your fullname"
+                                    }
                                 ]}
-                            />
-                        </Item>
+                            >
+                                <Input
+                                    placeholder="FullName"
+                                    style={{ borderRadius: 0 }}
+                                    size="large"
+                                />
+                            </Item>
+                            <Item
+                                name={'mobile'}
+                                label="Mobile"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Please enter your mobile"
+                                    }
+                                ]}
+                            >
+                                <Input
+                                    placeholder="+91 9545282408"
+                                    style={{ borderRadius: 0 }}
+                                    size="large"
+                                    type="tel"
+                                />
+                            </Item>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-3">
+                            <Item
+                                name={'email'}
+                                label="Email"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Please enter your email address"
+                                    }
+                                ]}
+                            >
+                                <Input
+                                    placeholder="Email"
+                                    style={{ borderRadius: 0 }}
+                                    size="large"
+                                />
+                            </Item>
+                            <Item
+                                name={'password'}
+                                label="Password"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Please enter your password"
+                                    }
+                                ]}
+                            >
+                                <Input
+                                    placeholder="********"
+                                    style={{ borderRadius: 0 }}
+                                    size="large"
+                                    type="password"
+                                />
+                            </Item>
+                        </div>
+                        <div className="grid md:grid-cols-3 gap-3">
+                            <Item
+                                name={'fatherName'}
+                                label="Father Name"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Please enter your father name"
+                                    }
+                                ]}
+                            >
+                                <Input
+                                    placeholder="Father Name"
+                                    style={{ borderRadius: 0 }}
+                                    size="large"
+                                />
+                            </Item>
+                            <Item
+                                name={'dob'}
+                                label="DOB"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Please enter your DOB"
+                                    }
+                                ]}
+                            >
+                                <Input
+                                    style={{ borderRadius: 0 }}
+                                    size="large"
+                                    type="date"
+                                />
+                            </Item>
+                            <Item
+                                name={'country'}
+                                label="Country"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Please enter your Country"
+                                    }
+                                ]}
+                            >
+                                <Input
+                                    style={{ borderRadius: 0 }}
+                                    size="large"
+                                    type="text"
+                                    placeholder="Country"
+                                />
+                            </Item>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-3">
+                            <Item
+                                name={'qualifications'}
+                                label="Qualification"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Please select your qualification"
+                                    }
+                                ]}
+                            >
+                                <Select
+                                    showSearch
+                                    placeholder="Select Qualification"
+                                    filterOption={(input, option) =>
+                                        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                    }
+                                    options={[
+                                        { value: '10th', label: 'High School' },
+                                        { value: '12th', label: 'Intermediate' },
+                                        { value: 'ug', label: 'UG' },
+                                        { value: 'pg', label: 'PG' },
+                                    ]}
+                                />
+                            </Item>
+                            <Item
+                                name={'courses'}
+                                label="Courses"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Please choose your Courses"
+                                    }
+                                ]}
+                            >
+                                <Select
+                                    placeholder="Choose your Courses"
+                                    mode="multiple"
+                                    tagRender={tagRender}
+                                    style={{
+                                        width: '100%',
+                                    }}
+                                    options={options}
+                                />
+                            </Item>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-3">
+                            <Item
+                                name={'gender'}
+                                label="Gender"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Please select your gender"
+                                    }
+                                ]}
+                            >
+                                <Select
+                                    showSearch
+                                    placeholder="Select gender"
+                                    filterOption={(input, option) =>
+                                        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                    }
+                                    options={[
+                                        { value: 'male', label: 'Male' },
+                                        { value: 'female', label: 'Female' }
+                                    ]}
+                                />
+                            </Item>
+                            <Item
+                                name={'userType'}
+                                label="User Type"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Please choose your user type"
+                                    }
+                                ]}
+                            >
+                                <Select
+                                    placeholder="Choose your user type"
+                                    style={{
+                                        width: '100%',
+                                    }}
+                                    options={[
+                                        { value: 'admin', label: 'Admin' },
+                                        { value: 'student', label: 'Student' },
+                                        { value: 'teacher', label: 'Teacher' }
+                                    ]}
+                                />
+                            </Item>
+                        </div>
                         <Item
-                            name={'courses'}
-                            label="Courses"
+                            name={'address'}
+                            label="Address"
                             rules={[
                                 {
                                     required: true,
-                                    message: "Please choose your Courses"
+                                    message: "Please enter your address"
                                 }
                             ]}
                         >
-                            <Select
-                                placeholder="Choose your Courses"
-                                mode="multiple"
-                                tagRender={tagRender}
-                                style={{
-                                    width: '100%',
-                                }}
-                                options={options}
+                            <Input.TextArea
+                                placeholder="Adress..."
+                                style={{ borderRadius: 0 }}
+                                size="large"
+                                type="text"
                             />
                         </Item>
-                    </div>
-                    <Item>
-                        <Button
-                            loading={loading}
-                            className="w-full bg-indigo-600 text-white font-semibold"
-                            size="large"
-                            style={{ borderRadius: 0 }}
-                            htmlType="submit"
+                        <Item>
+                            <Button
+                                loading={loading}
+                                className="w-full bg-indigo-600 text-white font-semibold"
+                                size="large"
+                                style={{ borderRadius: 0 }}
+                                htmlType="submit"
+                            >
+                                {loading ? "Processing..." : "Register"}
+                            </Button>
+                        </Item>
+                    </Form>
+
+                    <Divider>OR</Divider>
+
+                    <div className="flex justify-between items-center gap-2">
+                        <p>Already have an account?</p>
+                        <Link
+                            href={'/login'}
+                            legacyBehavior
                         >
-                            {loading ? "Processing..." : "Register"}
-                        </Button>
-                    </Item>
-                </Form>
-
-                <Divider>OR</Divider>
-
-                <div className="flex justify-between items-center">
-                    <p>Already have an account?</p>
-                    <Link
-                        href={'/login'}
-                        legacyBehavior
-                    >
-                        <a className="font-semibold text-indigo-600">Login Now</a>
-                    </Link>
+                            <a className="font-semibold text-indigo-600">Login Now</a>
+                        </Link>
+                    </div>
                 </div>
             </div>
-        </div>
+        </HomeLayout>
     )
 }
 

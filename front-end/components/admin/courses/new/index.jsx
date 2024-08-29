@@ -133,7 +133,7 @@ const New = () => {
                             layout="vertical"
                             onFinish={onFinish}
                         >
-                            <div className="flex gap-x-6">
+                            <div className="md:flex gap-x-6">
                                 <Item
                                     label="Course Title"
                                     name={'title'}
@@ -165,7 +165,7 @@ const New = () => {
                                         size="large"
                                         style={{ borderRadius: 0 }}
                                         addonAfter={
-                                            <Item name={'time'}>
+                                            <Item name={'time'} noStyle>
                                                 <Select placeholder="Select Time" style={{ minWidth: 100 }}>
                                                     <Option value={'hours'}>Hours</Option>
                                                     <Option value={'days'}>Days</Option>
@@ -177,7 +177,7 @@ const New = () => {
                                     />
                                 </Item>
                             </div>
-                            <div className="flex gap-x-6">
+                            <div className="md:flex gap-x-6">
                                 <Item
                                     label="Category"
                                     name={'category'}

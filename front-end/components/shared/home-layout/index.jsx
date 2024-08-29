@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { AlertOutlined, BellOutlined, BookOutlined, CloseOutlined, ContactsOutlined, DashboardOutlined, EyeOutlined, FileOutlined, HomeOutlined, LoginOutlined, LogoutOutlined, MailOutlined, PicCenterOutlined, SettingOutlined, SignatureOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import Logo from '../logo';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import FooterEl from '@/components/footer';
 import { signIn, signOut, useSession } from 'next-auth/react';
 
@@ -64,6 +64,8 @@ const Toolbar = () => {
 
 const HomeLayout = ({ children, title = null, toolbar = <Toolbar /> }) => {
     // hooks collection
+    const pathname = usePathname();
+    const router = useRouter();
     const { data: session } = useSession();
     console.log(session);
 
@@ -71,21 +73,31 @@ const HomeLayout = ({ children, title = null, toolbar = <Toolbar /> }) => {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(true);
 
+    // checkuser function to check user ytpe admin teacher or student
+    const checkUser = () => {
+        if (session?.user.userType) {
+            if (session?.user.userType === 'admin')
+                return router.push('/admin');
+
+            if (session?.user.userType === 'student')
+                return router.push('/students');
+        }
+    }
+
     // Toolbar items for dropdown
     const items = [
         {
             key: '1',
             label: (
-                session
-                && <Link href={"#"} legacyBehavior>
-                    <a
-                        href="/profile"
-                        className="flex items-center gap-x-2"
-                    >
-                        <DashboardOutlined />
-                        Profile
-                    </a>
-                </Link>
+                (session && session.user.userType)
+                && <a
+                    href="#"
+                    className="flex items-center gap-x-2"
+                    onClick={checkUser}
+                >
+                    <DashboardOutlined />
+                    Profile
+                </a>
             )
         },
         {

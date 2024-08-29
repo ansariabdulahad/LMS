@@ -27,11 +27,12 @@ const Files = () => {
                         className="border-gray-200 md:w-96"
                         placeholder="Search Files..."
                         style={{ borderRadius: 0 }}
+                        size="small"
                     />
                     <Button
                         type="primary"
                         className="bg-indigo-600"
-                        size="large"
+                        size="small"
                         style={{ borderRadius: 0 }}
                         icon={<PlusOutlined />}
                         onClick={() => setOpen(true)}

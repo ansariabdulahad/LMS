@@ -125,6 +125,7 @@ const Students = () => {
                                 className="text-gray-200"
                             />
                         }
+                        size="small"
                         className="border-gray-200 md:w-96"
                         placeholder="Search Students"
                         style={{ borderRadius: 0 }}
@@ -132,7 +133,7 @@ const Students = () => {
                     <Button
                         type="primary"
                         className="bg-indigo-600"
-                        size="large"
+                        size="small"
                         style={{ borderRadius: 0 }}
                         icon={<UserOutlined />}
                         onClick={() => setOpen(true)}

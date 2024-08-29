@@ -1,53 +1,66 @@
 'use client';
-import { Avatar, Badge, Breadcrumb, Button, Dropdown, Layout, Menu, Spin } from 'antd';
+import { Avatar, Badge, Breadcrumb, Button, Drawer, Dropdown, Layout, Menu, Spin } from 'antd';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { AlertOutlined, BellOutlined, DashboardOutlined, FileOutlined, LogoutOutlined, MailOutlined, PicCenterOutlined, SettingOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
+import { AlertOutlined, BellOutlined, CloseOutlined, DashboardOutlined, FileOutlined, LogoutOutlined, MailOutlined, PicCenterOutlined, SettingOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import Logo from '../logo';
-import { usePathname } from 'next/navigation';
+import { redirect, usePathname } from 'next/navigation';
+import { signOut, useSession } from 'next-auth/react';
 
 const { Sider, Content, Header } = Layout;
 const { Item } = Menu;
 
 const AdminLayout = ({ children, title = null, toolbar = null }) => {
     // hooks collection
+    const { data: session } = useSession();
+    console.log("ADMIN SESSION ::: ", session)
     const pathname = usePathname();
     // states variables collection
-    const [open, setOpen] = useState(true);
+    const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(true);
     const [margin, setMargin] = useState(null);
+
+    // if (session === undefined) {
+    //     return redirect('/')
+    // }
 
     // Menus data
     const menus = [
         {
             'label': <Link href={'/admin'}>{'Dashboard'}</Link>,
             'key': '/admin',
-            'icon': <DashboardOutlined />
+            'icon': <DashboardOutlined />,
+            'name': 'Dashboard',
         },
         {
             'label': <Link href={'/admin/courses'}>{'Courses'}</Link>,
             'key': '/admin/courses',
-            'icon': <VideoCameraOutlined />
+            'icon': <VideoCameraOutlined />,
+            'name': 'Courses',
         },
         {
             'label': <Link href={'/admin/students'}>{'Students'}</Link>,
             'key': '/admin/students',
-            'icon': <UserOutlined />
+            'icon': <UserOutlined />,
+            'name': 'Students',
         },
         {
             'label': <Link href={'/admin/files'}>{'Files & Media'}</Link>,
             'key': '/admin/files',
-            'icon': <FileOutlined />
+            'icon': <FileOutlined />,
+            'name': 'Files & Media'
         },
         {
             'label': <Link href={'/admin/sales'}>{'Sales & Revenue'}</Link>,
             'key': '/admin/sales',
-            'icon': <AlertOutlined />
+            'icon': <AlertOutlined />,
+            'name': 'Sales & Revenue'
         },
         {
             'label': <Link href={'/admin/settings'}>{'Settings'}</Link>,
             'key': '/admin/settings',
-            'icon': <SettingOutlined />
+            'icon': <SettingOutlined />,
+            'name': 'Settings'
         }
     ];
 
@@ -58,11 +71,11 @@ const AdminLayout = ({ children, title = null, toolbar = null }) => {
             label: (
                 <Link href={"#"} legacyBehavior>
                     <a
-                        href="/profile"
-                        className="flex items-center gap-x-2"
+                        href="#"
+                        className="flex items-center gap-x-2 capitalize"
                     >
                         <UserOutlined />
-                        Profile
+                        {session && session?.user?.name}
                     </a>
                 </Link>
             )
@@ -72,22 +85,9 @@ const AdminLayout = ({ children, title = null, toolbar = null }) => {
             label: (
                 <Link href={"#"} legacyBehavior>
                     <a
-                        href="/settings"
+                        href="#"
                         className="flex items-center gap-x-2"
-                    >
-                        <SettingOutlined />
-                        Settings
-                    </a>
-                </Link>
-            )
-        },
-        {
-            key: '3',
-            label: (
-                <Link href={"#"} legacyBehavior>
-                    <a
-                        href="/logout"
-                        className="flex items-center gap-x-2"
+                        onClick={() => signOut({ callbackUrl: '/' })}
                     >
                         <LogoutOutlined />
                         Logout
@@ -96,6 +96,19 @@ const AdminLayout = ({ children, title = null, toolbar = null }) => {
             )
         }
     ]
+
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia('(max-width: 768px)');
+        setIsMobile(mediaQuery.matches);
+
+        const handleResize = (e) => setIsMobile(e.matches);
+
+        mediaQuery.addEventListener('change', handleResize);
+
+        return () => mediaQuery.removeEventListener('change', handleResize);
+    }, [isMobile]);
 
     // useEffect coding for header and sider controlling
     useEffect(() => {
@@ -140,32 +153,69 @@ const AdminLayout = ({ children, title = null, toolbar = null }) => {
 
     return (
         <Layout>
-            <Sider
-                theme='light'
-                trigger={null}
-                collapsed={!open}
-                collapsible
-                className='min-h-screen'
-                style={{
-                    overflow: 'auto',
-                    height: '100vh',
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    bottom: 0
-                }}
-            >
-                <div className='py-4'>
-                    <Logo />
-                </div>
-                <Menu
-                    items={menus}
-                    selectedKeys={pathname}
-                />
-            </Sider>
+
+            {
+                isMobile ?
+                    <Drawer
+                        open={open}
+                        width={260}
+                        closeIcon={false}
+                        placement='left'
+                        title={<Logo />}
+                        extra={
+                            <Button onClick={() => setOpen(false)}>
+                                <CloseOutlined />
+                            </Button>
+                        }
+                    >
+                        <div className='flex flex-col gap-y-4'>
+                            {
+                                menus?.map((item, index) => (
+                                    <Link
+                                        key={index}
+                                        href={item.key}
+                                        className='flex items-center gap-4'
+                                        onClick={() => setOpen(false)}
+                                    >
+                                        <Button
+                                            icon={item.icon}
+                                            shape='circle'
+                                        />
+                                        {item.name}
+                                    </Link>
+                                ))
+                            }
+                        </div>
+                    </Drawer>
+                    :
+                    <Sider Sider
+                        theme='light'
+                        trigger={null}
+                        collapsed={!open}
+                        collapsible
+                        className='min-h-screen'
+                        style={{
+                            overflow: 'auto',
+                            height: '100vh',
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            bottom: 0
+                        }}
+                    >
+                        <div className='py-4'>
+                            <Logo />
+                        </div>
+                        <Menu
+                            items={menus}
+                            selectedKeys={pathname}
+                        />
+                    </Sider>
+            }
+
             <Layout
                 style={{
-                    marginLeft: margin,
+                    marginLeft: isMobile ? "" : margin,
                     transition: '0.2s ease'
                 }}
             >
@@ -186,27 +236,29 @@ const AdminLayout = ({ children, title = null, toolbar = null }) => {
                         />
                         <div>
                             {
-                                title &&
-                                <h1 className='text-lg font-semibold capitalize'>{title}</h1>
+                                isMobile
+                                    ? ""
+                                    : title &&
+                                    <h1 className='text-lg font-semibold capitalize'>{title}</h1>
                             }
                         </div>
                     </div>
-                    <div className='flex items-center gap-x-4'>
+                    <div className='flex items-center md:gap-x-4 gap-x-2'>
                         {toolbar && toolbar}
                         <Button
                             icon={<MailOutlined />}
                             className="bg-green-100 text-green-600"
-                            size="large"
+                            size={isMobile ? "small" : "large"}
                             shape="circle"
                         />
                         <Button
                             icon={
-                                <Badge count={5}>
+                                <Badge count={5} size={isMobile ? "small" : "large"}>
                                     <BellOutlined />
                                 </Badge>
                             }
                             className="bg-orange-100 text-orange-600"
-                            size="large"
+                            size={isMobile ? "small" : "large"}
                             shape="circle"
                         />
                         <Dropdown
@@ -216,7 +268,13 @@ const AdminLayout = ({ children, title = null, toolbar = null }) => {
                             placement="bottomRight"
                             arrow
                         >
-                            <Avatar className="bg-red-100 text-red-600" size={'large'}>A</Avatar>
+                            {
+                                session
+                                    ? session.user.image
+                                        ? <Avatar size={isMobile ? "small" : "large"} shape='circle' src={session.user.image} />
+                                        : <Avatar size={isMobile ? "small" : "large"} shape='circle' className='md:text-2xl capitalize font-bold bg-rose-400'>{session?.user.name[0]}</Avatar>
+                                    : <Avatar size={isMobile ? "small" : "large"} shape='circle' icon={<UserOutlined />} />
+                            }
                         </Dropdown>
                     </div>
                 </Header>
@@ -227,7 +285,7 @@ const AdminLayout = ({ children, title = null, toolbar = null }) => {
                     {children}
                 </Content>
             </Layout>
-        </Layout>
+        </Layout >
     )
 }
 
