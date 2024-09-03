@@ -3,7 +3,8 @@ import AdminLayout from "@/components/shared/admin-layout";
 import { CloseOutlined, EditFilled, PlusOutlined, SyncOutlined, UserOutlined } from "@ant-design/icons";
 import { Avatar, Button, Card, Empty, Form, Input, message, Modal, Tag } from "antd";
 import axios from "axios";
-import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { Fragment, useState } from "react";
 import useSWR, { mutate } from "swr";
 
 // setting base url using axios
@@ -35,6 +36,7 @@ const Settings = () => {
         state: false,
         type: null
     });
+    const { data: session } = useSession();
 
     // useSwr for data fetching while page rendering
     const { data, error } = useSWR(
@@ -126,201 +128,229 @@ const Settings = () => {
     // }
 
     return (
-        <AdminLayout title={'Settings'}>
+        <Fragment>
+            <AdminLayout title={'Settings'}>
 
-            <div className="grid md:grid-cols-3 gap-6">
-                <Card
-                    title="Profile"
-                    className="shadow md:col-span-3"
-                    extra={
-                        <Button
-                            icon={<EditFilled />}
-                            type="text"
-                            onClick={() => setEdit(!edit)}
-                        />
-                    }
-                >
-                    <div className="flex flex-col gap-y-8">
-                        <div className="flex items-center gap-x-6">
-                            <Avatar
-                                icon={<UserOutlined />}
-                                size={"large"}
+                <div className="grid md:grid-cols-3 gap-6">
+                    <Card
+                        title="Profile"
+                        className="shadow md:col-span-3"
+                        extra={
+                            <Button
+                                icon={<EditFilled />}
+                                type="text"
+                                onClick={() => setEdit(!edit)}
                             />
-                            <div>
-                                <h1 className="text-lg font-semibold">Alok Kumar</h1>
-                                <p className="text-gray-500">alok@gmail.com</p>
+                        }
+                    >
+                        <div className="flex flex-col gap-y-8">
+                            <div className="flex items-center gap-x-6">
+                                {
+                                    (session && session?.user?.image)
+                                        ? <Avatar
+                                            icon={<UserOutlined />}
+                                            src={session?.user?.image}
+                                        />
+                                        : <Avatar
+                                            icon={<UserOutlined />}
+                                            size={"large"}
+                                        />
+                                }
+                                <div>
+                                    <h1 className="text-lg font-semibold capitalize">
+                                        {session && session?.user?.name}
+                                    </h1>
+                                    <p className="text-gray-500">
+                                        {session && session?.user?.email}
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-                        <Form layout="vertical"
-                            className="grid md:grid-cols-2 gap-x-4"
-                        >
-                            <Form.Item
-                                name={'fullname'}
-                                label="Fullname"
+                            <Form layout="vertical"
+                                className="grid md:grid-cols-2 gap-x-4"
+                                initialValues={session && session?.user}
                             >
-                                <Input
-                                    defaultValue="Ahad Ansari"
-                                    size="large"
-                                    disabled={!edit}
-                                />
-                            </Form.Item>
-                            <Form.Item
-                                name={'email'}
-                                label="Email"
-                            >
-                                <Input
-                                    defaultValue="ahad@gmail.com"
-                                    size="large"
-                                    disabled={!edit}
-                                />
-                            </Form.Item>
-                            <Form.Item
-                                name={'country'}
-                                label="Country"
-                            >
-                                <Input
-                                    defaultValue="India"
-                                    size="large"
-                                    disabled={!edit}
-                                />
-                            </Form.Item>
-                            <Form.Item
-                                name={'gender'}
-                                label="Gender"
-                            >
-                                <Input
-                                    defaultValue="Male"
-                                    size="large"
-                                    disabled={!edit}
-                                />
-                            </Form.Item>
-                            {
-                                edit &&
-                                <Form.Item>
-                                    <div className="flex gap-x-4">
-                                        <Button
-                                            type="primary"
-                                            className="bg-rose-500"
-                                            onClick={() => setEdit(false)}
-                                            htmlType="submit"
-                                        >
-                                            Save
-                                        </Button>
-                                        <Button
-                                            type="primary"
-                                            className="bg-blue-500"
-                                            onClick={() => setEdit(false)}
-                                        >
-                                            Cancle
-                                        </Button>
-                                    </div>
+                                <Form.Item
+                                    name={'fullname'}
+                                    label="Fullname"
+                                >
+                                    <Input
+                                        size="large"
+                                        disabled={!edit}
+                                    />
                                 </Form.Item>
+                                <Form.Item
+                                    name={'email'}
+                                    label="Email"
+                                >
+                                    <Input
+                                        size="large"
+                                        disabled={!edit}
+                                    />
+                                </Form.Item>
+                                <Form.Item
+                                    name={'mobile'}
+                                    label="Mobile"
+                                >
+                                    <Input
+                                        size="large"
+                                        disabled={!edit}
+                                    />
+                                </Form.Item>
+                                <Form.Item
+                                    name={'password'}
+                                    label="Password"
+                                >
+                                    <Input
+                                        size="large"
+                                        disabled={!edit}
+                                    />
+                                </Form.Item>
+                                <Form.Item
+                                    name={'country'}
+                                    label="Country"
+                                >
+                                    <Input
+                                        size="large"
+                                        disabled={!edit}
+                                    />
+                                </Form.Item>
+                                <Form.Item
+                                    name={'gender'}
+                                    label="Gender"
+                                >
+                                    <Input
+                                        size="large"
+                                        disabled={!edit}
+                                    />
+                                </Form.Item>
+                                {
+                                    edit &&
+                                    <Form.Item>
+                                        <div className="flex gap-x-4">
+                                            <Button
+                                                type="primary"
+                                                className="bg-rose-500"
+                                                onClick={() => setEdit(false)}
+                                                htmlType="submit"
+                                            >
+                                                Save
+                                            </Button>
+                                            <Button
+                                                type="primary"
+                                                className="bg-blue-500"
+                                                onClick={() => setEdit(false)}
+                                            >
+                                                Cancle
+                                            </Button>
+                                        </div>
+                                    </Form.Item>
+                                }
+                            </Form>
+                        </div>
+                    </Card>
+                    <Card
+                        title="Notifications"
+                        className="shadow md:col-span-2"
+                    >
+                        <div className="flex items-center justify-center flex-wrap">
+                            {
+                                data && data.length === 0 &&
+                                <Empty />
                             }
-                        </Form>
-                    </div>
-                </Card>
-                <Card
-                    title="Notifications"
-                    className="shadow md:col-span-2"
-                >
-                    <div className="flex items-center justify-center flex-wrap">
-                        {
-                            data && data.length === 0 &&
-                            <Empty />
-                        }
-                        {
-                            data && data.map((item, index) => (
-                                <Tag
-                                    className="mb-2 flex flex-row-reverse gap-x-2"
-                                    key={index}
-                                    color={item.color}
-                                    icon={
-                                        (
-                                            loading.state &&
-                                            loading.type === 'notification' &&
-                                            loading.index === index
-                                        )
-                                            ? <SyncOutlined spin />
-                                            : <CloseOutlined
-                                                onClick={() => deleteNotification(item.id, index)}
-                                            />
+                            {
+                                data && data.map((item, index) => (
+                                    <Tag
+                                        className="mb-2 flex flex-row-reverse gap-x-2"
+                                        key={index}
+                                        color={item.color}
+                                        icon={
+                                            (
+                                                loading.state &&
+                                                loading.type === 'notification' &&
+                                                loading.index === index
+                                            )
+                                                ? <SyncOutlined spin />
+                                                : <CloseOutlined
+                                                    onClick={() => deleteNotification(item.id, index)}
+                                                />
 
-                                    }
-                                >
-                                    {item.title}
-                                </Tag>
-                            ))
-                        }
-                    </div>
-                    <div className="text-center">
-                        <Button
-                            type="primary"
-                            icon={<PlusOutlined />}
-                            className="bg-amber-500 mt-4"
-                            style={{ borderRadius: 0 }}
-                            onClick={() => setOpen(true)}
+                                        }
+                                    >
+                                        {item.title}
+                                    </Tag>
+                                ))
+                            }
+                        </div>
+                        <div className="text-center">
+                            <Button
+                                type="primary"
+                                icon={<PlusOutlined />}
+                                className="bg-amber-500 mt-4"
+                                style={{ borderRadius: 0 }}
+                                onClick={() => setOpen(true)}
+                            >
+                                Add
+                            </Button>
+                        </div>
+                    </Card>
+                    <Card
+                        title="Profile"
+                        className="shadow"
+                    >
+                        <div>Dummy</div>
+                    </Card>
+                </div>
+
+                <Modal
+                    title="New Notification"
+                    open={open}
+                    onCancel={() => setOpen(false)}
+                    footer={false}
+                >
+                    <Form
+                        form={form}
+                        onFinish={createNotification}>
+                        <Form.Item
+                            name='title'
+                            rules={[{ required: true }]}
                         >
-                            Add
-                        </Button>
-                    </div>
-                </Card>
-                <Card
-                    title="Profile"
-                    className="shadow"
-                >
-                    <div>Dummy</div>
-                </Card>
-            </div>
-
-            <Modal
-                title="New Notification"
-                open={open}
-                onCancel={() => setOpen(false)}
-                footer={false}
-            >
-                <Form
-                    form={form}
-                    onFinish={createNotification}>
-                    <Form.Item
-                        name='title'
-                        rules={[{ required: true }]}
-                    >
-                        <Input
-                            placeholder="title"
-                        />
-                    </Form.Item>
-                    <Form.Item
-                        name='color'
-                        rules={[{ required: true }]}
-                    >
-                        <Input
-                            type="color"
-                        />
-                    </Form.Item>
-                    <Form.Item>
-                        {
-                            (loading.state && loading.type === "create")
-                                ? <Button
-                                    className="bg-violet-500 text-white"
-                                    type="text"
-                                    htmlType="button"
-                                    loading
-                                >
-                                    processing...
-                                </Button>
-                                : <Button
-                                    className="bg-violet-500"
-                                    type="primary"
-                                    htmlType="submit"
-                                >
-                                    create
-                                </Button>
-                        }
-                    </Form.Item>
-                </Form>
-            </Modal>
-            {contextHolder}
-        </AdminLayout>
+                            <Input
+                                placeholder="title"
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            name='color'
+                            rules={[{ required: true }]}
+                        >
+                            <Input
+                                type="color"
+                            />
+                        </Form.Item>
+                        <Form.Item>
+                            {
+                                (loading.state && loading.type === "create")
+                                    ? <Button
+                                        className="bg-violet-500 text-white"
+                                        type="text"
+                                        htmlType="button"
+                                        loading
+                                    >
+                                        processing...
+                                    </Button>
+                                    : <Button
+                                        className="bg-violet-500"
+                                        type="primary"
+                                        htmlType="submit"
+                                    >
+                                        create
+                                    </Button>
+                            }
+                        </Form.Item>
+                    </Form>
+                </Modal>
+                {contextHolder}
+            </AdminLayout>
+        </Fragment>
     )
 }
 
