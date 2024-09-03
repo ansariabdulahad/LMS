@@ -13,16 +13,11 @@ const { Item } = Menu;
 const AdminLayout = ({ children, title = null, toolbar = null }) => {
     // hooks collection
     const { data: session } = useSession();
-    console.log("ADMIN SESSION ::: ", session)
     const pathname = usePathname();
-    // states variables collection
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(true);
     const [margin, setMargin] = useState(null);
-
-    // if (session === undefined) {
-    //     return redirect('/')
-    // }
+    const [isMobile, setIsMobile] = useState(false);
 
     // Menus data
     const menus = [
@@ -97,8 +92,7 @@ const AdminLayout = ({ children, title = null, toolbar = null }) => {
         }
     ]
 
-    const [isMobile, setIsMobile] = useState(false);
-
+    // handled login for mobile devices
     useEffect(() => {
         const mediaQuery = window.matchMedia('(max-width: 768px)');
         setIsMobile(mediaQuery.matches);
@@ -149,6 +143,14 @@ const AdminLayout = ({ children, title = null, toolbar = null }) => {
             }
         ));
         return items;
+    }
+
+    // check session and handle logic accordingly
+    if (session) {
+        if (session && session?.user?.userType !== 'admin')
+            return redirect('/');
+    } else {
+        return redirect('/login');
     }
 
     return (
