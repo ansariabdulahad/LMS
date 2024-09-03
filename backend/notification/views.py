@@ -4,12 +4,16 @@ from rest_framework import status
 
 from .models import Notification
 from .serializers import NoitificationSerializer
+from .permissions import IsAdmin
 
-class NotificationList(APIView) :
+class GetNotification(APIView):
     def get(self, req) :
         data = Notification.objects.all()
         serialize = NoitificationSerializer(data, many=True)
         return Response(serialize.data, status=status.HTTP_200_OK)
+
+class NotificationList(APIView) :
+    permission_classes = [IsAdmin]
 
     def post(self, req) :
         try :
@@ -22,6 +26,8 @@ class NotificationList(APIView) :
             return Response({ "error" : str(err) }, status=status.HTTP_424_FAILED_DEPENDENCY)
 
 class NotificationDetail(APIView) :
+    permission_classes = [IsAdmin]
+    
     # Practice for geting data by id
     """def get(self, req, id) :
         try : data = Notification.objects.get(id=id)

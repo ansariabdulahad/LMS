@@ -1,5 +1,6 @@
 'use client';
 import AdminLayout from "@/components/shared/admin-layout";
+import { http } from "@/modules/http";
 import { CloseOutlined, EditFilled, PlusOutlined, SyncOutlined, UserOutlined } from "@ant-design/icons";
 import { Avatar, Button, Card, Empty, Form, Input, message, Modal, Tag } from "antd";
 import axios from "axios";
@@ -37,6 +38,8 @@ const Settings = () => {
         type: null
     });
     const { data: session } = useSession();
+    console.log(session);
+
 
     // useSwr for data fetching while page rendering
     const { data, error } = useSWR(
@@ -51,11 +54,10 @@ const Settings = () => {
             state: true
         })
         try {
-            await axios({
-                method: 'POST',
-                url: '/notification/',
-                data: values
-            });
+            // make private api call
+            const accessToken = (session && session?.user?.access);
+            const httpReq = http(accessToken);
+            await httpReq.post('/notification/private/', values);
             mutate("/notification/");
             setLoading({
                 type: null,
@@ -89,10 +91,9 @@ const Settings = () => {
         });
 
         try {
-            await axios({
-                method: 'DELETE',
-                url: `/notification/${id}/`
-            });
+            const accessToken = (session && session?.user?.access);
+            const httpReq = http(accessToken);
+            await httpReq.delete(`/notification/${id}/`);
 
             setLoading({
                 state: false,
@@ -106,11 +107,14 @@ const Settings = () => {
             mutate('/notification/');
 
         } catch (error) {
-            setLoading({
-                state: false,
-                type: null
+            messageApi.open({
+                type: 'error',
+                content: "Unable to create notification, please try again !"
             });
-            console.log(error.message);
+            setLoading({
+                type: null,
+                state: false
+            })
         }
     }
 
