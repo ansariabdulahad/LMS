@@ -38,8 +38,6 @@ const Settings = () => {
         type: null
     });
     const { data: session } = useSession();
-    console.log(session);
-
 
     // useSwr for data fetching while page rendering
     const { data, error } = useSWR(
@@ -118,18 +116,19 @@ const Settings = () => {
         }
     }
 
-    // Testing backend api to fetch data using axios
-    // const test = async () => {
-    //     try {
-    //         const response = await axios({
-    //             'method': 'GET',
-    //             'url': '/notification/'
-    //         });
-    //         console.log(response.data);
-    //     } catch (error) {
-    //         console.log(error.message);
-    //     }
-    // }
+    // update admin profile
+    const onSave = async (values) => {
+        try {
+            const httpReq = http(session && session?.user?.access);
+            const { data } = await httpReq.put(
+                `auth/profile/${session && session.user.user_id}/`,
+                values
+            );
+            message.success("Profile updated successfully");
+        } catch (error) {
+            message.error(error.message);
+        }
+    }
 
     return (
         <Fragment>
@@ -169,9 +168,11 @@ const Settings = () => {
                                     </p>
                                 </div>
                             </div>
-                            <Form layout="vertical"
+                            <Form
+                                onFinish={onSave}
+                                initialValues={session?.user}
+                                layout="vertical"
                                 className="grid md:grid-cols-2 gap-x-4"
-                                initialValues={session && session?.user}
                             >
                                 <Form.Item
                                     name={'fullname'}
@@ -188,7 +189,7 @@ const Settings = () => {
                                 >
                                     <Input
                                         size="large"
-                                        disabled={!edit}
+                                        disabled
                                     />
                                 </Form.Item>
                                 <Form.Item
@@ -203,6 +204,12 @@ const Settings = () => {
                                 <Form.Item
                                     name={'password'}
                                     label="Password"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Please enter your password or update your password',
+                                        }
+                                    ]}
                                 >
                                     <Input
                                         size="large"
@@ -227,28 +234,25 @@ const Settings = () => {
                                         disabled={!edit}
                                     />
                                 </Form.Item>
-                                {
-                                    edit &&
-                                    <Form.Item>
-                                        <div className="flex gap-x-4">
-                                            <Button
-                                                type="primary"
-                                                className="bg-rose-500"
-                                                onClick={() => setEdit(false)}
-                                                htmlType="submit"
-                                            >
-                                                Save
-                                            </Button>
-                                            <Button
-                                                type="primary"
-                                                className="bg-blue-500"
-                                                onClick={() => setEdit(false)}
-                                            >
-                                                Cancle
-                                            </Button>
-                                        </div>
-                                    </Form.Item>
-                                }
+                                <Form.Item>
+                                    <div className="flex gap-x-4">
+                                        <Button
+                                            type="primary"
+                                            className="bg-rose-500"
+                                            onClick={() => setEdit(false)}
+                                            htmlType="submit"
+                                        >
+                                            Save
+                                        </Button>
+                                        <Button
+                                            type="primary"
+                                            className="bg-blue-500"
+                                            onClick={() => setEdit(false)}
+                                        >
+                                            Cancle
+                                        </Button>
+                                    </div>
+                                </Form.Item>
                             </Form>
                         </div>
                     </Card>

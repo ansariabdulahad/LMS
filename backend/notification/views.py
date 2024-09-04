@@ -4,7 +4,7 @@ from rest_framework import status
 
 from .models import Notification
 from .serializers import NoitificationSerializer
-from .permissions import IsAdmin
+from package.permissions import IsAdmin
 
 class GetNotification(APIView):
     def get(self, req) :

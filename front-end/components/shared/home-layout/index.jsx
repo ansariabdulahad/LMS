@@ -67,7 +67,6 @@ const HomeLayout = ({ children, title = null, toolbar = <Toolbar /> }) => {
     const pathname = usePathname();
     const router = useRouter();
     const { data: session } = useSession();
-    console.log(session);
 
     // states variables collection
     const [open, setOpen] = useState(false);
