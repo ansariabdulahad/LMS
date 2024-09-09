@@ -49,7 +49,7 @@ const menus = [
 const Toolbar = () => {
     return (
         menus?.map((item, index) => (
-            <Link Link key={index} href={item.key} >
+            <Link key={index} href={item.key} >
                 <Button
                     className='text-xl'
                     type='text'

@@ -176,7 +176,7 @@ const Settings = () => {
                             >
                                 <Form.Item
                                     name={'fullname'}
-                                    label="Fullname"
+                                    label="Full Name"
                                 >
                                     <Input
                                         size="large"
@@ -202,14 +202,8 @@ const Settings = () => {
                                     />
                                 </Form.Item>
                                 <Form.Item
-                                    name={'password'}
-                                    label="Password"
-                                    rules={[
-                                        {
-                                            required: true,
-                                            message: 'Please enter your password or update your password',
-                                        }
-                                    ]}
+                                    name={'fatherName'}
+                                    label="Father Name"
                                 >
                                     <Input
                                         size="large"
@@ -234,25 +228,31 @@ const Settings = () => {
                                         disabled={!edit}
                                     />
                                 </Form.Item>
-                                <Form.Item>
-                                    <div className="flex gap-x-4">
-                                        <Button
-                                            type="primary"
-                                            className="bg-rose-500"
-                                            onClick={() => setEdit(false)}
-                                            htmlType="submit"
-                                        >
-                                            Save
-                                        </Button>
-                                        <Button
-                                            type="primary"
-                                            className="bg-blue-500"
-                                            onClick={() => setEdit(false)}
-                                        >
-                                            Cancle
-                                        </Button>
-                                    </div>
-                                </Form.Item>
+                                {
+                                    edit && (
+                                        <Form.Item>
+                                            <div className="flex gap-x-4">
+                                                <Button
+                                                    type="primary"
+                                                    className="bg-rose-500"
+                                                    onClick={() => setEdit(false)}
+                                                    htmlType="submit"
+                                                    disabled={!edit}
+                                                >
+                                                    Save
+                                                </Button>
+                                                <Button
+                                                    type="primary"
+                                                    className="bg-blue-500"
+                                                    onClick={() => setEdit(false)}
+                                                    disabled={!edit}
+                                                >
+                                                    Cancle
+                                                </Button>
+                                            </div>
+                                        </Form.Item>
+                                    )
+                                }
                             </Form>
                         </div>
                     </Card>

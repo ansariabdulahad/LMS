@@ -190,7 +190,7 @@ const AdminLayout = ({ children, title = null, toolbar = null }) => {
                         </div>
                     </Drawer>
                     :
-                    <Sider Sider
+                    <Sider
                         theme='light'
                         trigger={null}
                         collapsed={!open}
