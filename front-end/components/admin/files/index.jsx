@@ -55,27 +55,7 @@ const Files = () => {
             <div className="md:w-9/12 mx-auto flex flex-col gap-y-6">
                 <Uploader />
                 <div className="flex flex-col gap-y-6">
-                    <div className="flex justify-between items-center">
-                        <Button
-                            icon={<ArrowLeftOutlined />}
-                        />
-                        <Breadcrumb
-                            items={[
-                                {
-                                    title: 'Home',
-                                },
-                                {
-                                    title: <a href="">Application Center</a>,
-                                },
-                                {
-                                    title: <a href="">Application List</a>,
-                                },
-                                {
-                                    title: 'An Application',
-                                },
-                            ]}
-                        />
-                    </div>
+                    
                     <ListEl />
                 </div>
             </div>

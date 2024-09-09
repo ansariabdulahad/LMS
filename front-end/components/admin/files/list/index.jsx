@@ -1,30 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Avatar, Button, Divider, Dropdown, List, Skeleton } from 'antd';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import { DeleteOutlined, DownloadOutlined, EditOutlined, FolderFilled, MoreOutlined } from '@ant-design/icons';
+import { Breadcrumb, Button, Dropdown, List } from 'antd';
+import { ArrowLeftOutlined, DeleteOutlined, DownloadOutlined, EditOutlined, FolderFilled, MoreOutlined } from '@ant-design/icons';
+import { usePathname, useRouter } from 'next/navigation';
+import Link from 'next/link';
 const ListEl = () => {
+    const pathname = usePathname();
+    const router = useRouter();
+    console.log(router);
+
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState([]);
-
-    const loadMoreData = () => {
-        if (loading) {
-            return;
-        }
-        setLoading(true);
-        fetch('https://randomuser.me/api/?results=10&inc=name,gender,email,nat,picture&noinfo')
-            .then((res) => res.json())
-            .then((body) => {
-                setData([...data, ...body.results]);
-                setLoading(false);
-            })
-            .catch(() => {
-                setLoading(false);
-            });
-    };
-
-    useEffect(() => {
-        loadMoreData();
-    }, []);
+    const [dir, setDir] = useState(null);
 
     // Items constant for dropdown option in list
     const items = [
@@ -69,32 +55,44 @@ const ListEl = () => {
         }
     ];
 
+    // when pathname is changed working
+    useEffect(() => {
+        if (pathname) {
+            setDir(pathname);
+        }
+    }, [pathname]);
+
     return (
-        <div
-            id="scrollableDiv"
-            style={{
-                height: 400,
-                overflow: 'auto',
-                padding: '0 16px',
-                border: '1px solid rgba(140, 140, 140, 0.35)',
-                backgroundColor: '#fff'
-            }}
-        >
-            <InfiniteScroll
-                dataLength={data.length}
-                next={loadMoreData}
-                hasMore={data.length < 50}
-                loader={
-                    <Skeleton
-                        avatar
-                        paragraph={{
-                            rows: 1,
-                        }}
-                        active
-                    />
-                }
-                endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
-                scrollableTarget="scrollableDiv"
+        <div>
+            <div className="flex mt-8 mb-4 justify-between items-center">
+                <Button
+                    icon={<ArrowLeftOutlined />}
+                    onClick={() => router.back()}
+                />
+                <Breadcrumb
+                    items={
+                        dir &&
+                        dir.split('/').map((item, index) => (
+                            index > 2 &&
+                            {
+                                title: <Link href={
+                                    dir &&
+                                    dir.split('/').splice(0, index + 1).join('/')
+                                }>{item}</Link>
+                            }
+                        ))
+                    }
+                />
+            </div>
+            <div
+                id="scrollableDiv"
+                style={{
+                    height: 400,
+                    overflow: 'auto',
+                    padding: '0 16px',
+                    border: '1px solid rgba(140, 140, 140, 0.35)',
+                    backgroundColor: '#fff'
+                }}
             >
                 <List
                     dataSource={data}
@@ -137,7 +135,7 @@ const ListEl = () => {
                         </List.Item>
                     )}
                 />
-            </InfiniteScroll>
+            </div>
         </div>
     );
 };
