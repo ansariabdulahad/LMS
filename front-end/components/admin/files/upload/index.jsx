@@ -1,30 +1,53 @@
 import { InboxOutlined } from "@ant-design/icons";
-import { Upload } from "antd";
+import { message, Upload } from "antd";
+import AWS from "@/modules/aws";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const { Dragger } = Upload;
+const s3 = new AWS.S3();
 
 const Uploader = () => {
+    const pathname = usePathname();
+    const [dir, setDir] = useState(null);
 
     // options for drag and drop upload functionality
     const props = {
         name: 'file',
         multiple: true,
         action: 'https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload',
-        onChange(info) {
-            const { status } = info.file;
-            if (status !== 'uploading') {
-                console.log(info.file, info.fileList);
-            }
-            if (status === 'done') {
-                message.success(`${info.file.name} file uploaded successfully.`);
-            } else if (status === 'error') {
-                message.error(`${info.file.name} file upload failed.`);
+        customRequest: async ({ file, onProgress, onSuccess, onError }) => {
+            const uploader = s3.upload({
+                Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET,
+                Key: `${dir}/${file.name}`,
+                Body: file
+            });
+
+            uploader.on('httpUploadProgress', ({ loaded, total }) => {
+                const p = Math.round((loaded / total) * 100);
+                onProgress({ percent: p });
+            })
+
+            try {
+                const data = await uploader.promise();
+                message.success(`File Uploaded in ${data.Key}`);
+                onSuccess();
+            } catch (error) {
+                onError(error.message);
             }
         },
         onDrop(e) {
             console.log('Dropped files', e.dataTransfer.files);
         },
     };
+
+    useEffect(() => {
+        if (pathname) {
+            let tmp = pathname.split('/');
+            let path = tmp.splice(3, tmp.length - 1).join('/');
+            setDir(path);
+        }
+    }, [pathname]);
 
     return (
         <Dragger {...props}>

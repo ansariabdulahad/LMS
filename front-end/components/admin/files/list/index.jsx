@@ -3,11 +3,13 @@ import { Breadcrumb, Button, Dropdown, List } from 'antd';
 import { ArrowLeftOutlined, DeleteOutlined, DownloadOutlined, EditOutlined, FolderFilled, MoreOutlined } from '@ant-design/icons';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import AWS from 'aws-sdk';
+
+const s3 = new AWS.S3();
+
 const ListEl = () => {
     const pathname = usePathname();
     const router = useRouter();
-    console.log(router);
-
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState([]);
     const [dir, setDir] = useState(null);
@@ -58,9 +60,22 @@ const ListEl = () => {
     // when pathname is changed working
     useEffect(() => {
         if (pathname) {
-            setDir(pathname);
+            let tmp = pathname.split('/');
+            let path = tmp.splice(3, tmp.length - 1).join('/');
+            setDir(path);
         }
     }, [pathname]);
+
+    useEffect(() => {
+        dir && s3.listObjects({
+            Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET,
+            Prefix: dir
+        }, (err, obj) => {
+            console.log(err, data);
+            if (err) return message.error("No data available");
+            setData(obj.Contents);
+        })
+    }, [dir]);
 
     return (
         <div>
@@ -97,7 +112,7 @@ const ListEl = () => {
                 <List
                     dataSource={data}
                     renderItem={(item) => (
-                        <List.Item key={item.email}>
+                        <List.Item key={item.Key}>
                             <List.Item.Meta
                                 avatar={<FolderFilled className='text-lg text-amber-600' />}
                                 title={
@@ -105,7 +120,7 @@ const ListEl = () => {
                                         href="https://ant.design"
                                         className='font-semibold'
                                     >
-                                        {item.name.last}
+                                        {item.Key}
                                     </a>
                                 }
                                 description={
