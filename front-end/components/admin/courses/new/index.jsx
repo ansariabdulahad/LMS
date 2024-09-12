@@ -1,58 +1,16 @@
 'use client';
 import AdminLayout from "@/components/shared/admin-layout"
-import { CheckOutlined, DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Card, Checkbox, Form, Image, Input, List, Select, Upload } from "antd";
-import { useState } from "react";
+import { CheckOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { Button, Card, Checkbox, Form, Input, List, message, Select } from "antd";
+import { http } from "@/modules/http";
+import { useSession } from "next-auth/react";
 
 const { Option } = Select;
 const { Item } = Form;
 
-// getbase64 function for upload filed in list
-const getBase64 = (file) =>
-    new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(error);
-    });
-
 const New = () => {
-
-    // states handled here
-    // start upload coding
-    const [previewOpen, setPreviewOpen] = useState(false);
-    const [previewImage, setPreviewImage] = useState('');
-    const [fileList, setFileList] = useState([]);
-
-    const handlePreview = async (file) => {
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        setPreviewImage(file.url || file.preview);
-        setPreviewOpen(true);
-    };
-
-    const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
-    // end upload coding
-
-    const uploadButton = (
-        <button
-            style={{
-                border: 0,
-                background: 'none',
-            }}
-            type="button"
-        >
-            <PlusOutlined />
-            <div
-                style={{
-                    marginTop: 8,
-                }}
-            >
-                Upload
-            </div>
-        </button>
-    );
+    const [courseForm] = Form.useForm();
+    const { data: session } = useSession();
 
     // categories added to new curse list
     const categories = [
@@ -71,8 +29,17 @@ const New = () => {
     ]
 
     // onfinish form get values
-    const onFinish = (values) => {
-        console.log(values);
+    const onFinish = async (values) => {
+        try {
+            const httpReq = http(session && session?.user?.access);
+            const { data } = await httpReq.post('/course/private/', values);
+            console.log(data);
+            message.success("Course created successfully");
+        } catch (error) {
+            message.error("Error occurred while creating course");
+        } finally {
+            // courseForm.resetFields();
+        }
     }
 
     return (
@@ -132,6 +99,7 @@ const New = () => {
                         <Form
                             layout="vertical"
                             onFinish={onFinish}
+                            form={courseForm}
                         >
                             <div className="md:flex gap-x-6">
                                 <Item
@@ -164,8 +132,9 @@ const New = () => {
                                         placeholder="00:00"
                                         size="large"
                                         style={{ borderRadius: 0 }}
+                                        type="number"
                                         addonAfter={
-                                            <Item name={'time'} noStyle>
+                                            <Item name={'durationIn'} noStyle>
                                                 <Select placeholder="Select Time" style={{ minWidth: 100 }}>
                                                     <Option value={'hours'}>Hours</Option>
                                                     <Option value={'days'}>Days</Option>
@@ -216,6 +185,7 @@ const New = () => {
                                     <Input
                                         size="large"
                                         placeholder="2000"
+                                        type="number"
                                     />
                                 </Item>
                                 <Item
@@ -232,6 +202,7 @@ const New = () => {
                                     <Input
                                         size="large"
                                         placeholder="25"
+                                        type="number"
                                         addonAfter={
                                             <span className="font-bold">%</span>
                                         }
@@ -253,27 +224,6 @@ const New = () => {
                                     size="large"
                                     placeholder="Description"
                                 />
-                            </Item>
-                            <Item
-                                label="Thumbnail"
-                                name={'thumbnail'}
-                                className="w-full"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Thumbnail is required'
-                                    }
-                                ]}
-                            >
-                                <Upload
-                                    action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-                                    listType="picture-card"
-                                    fileList={fileList}
-                                    onPreview={handlePreview}
-                                    onChange={handleChange}
-                                >
-                                    {fileList.length == 0 && uploadButton}
-                                </Upload>
                             </Item>
                             <div className="flex gap-x-6">
                                 <Item
@@ -307,20 +257,6 @@ const New = () => {
                     </Card>
                 </div>
             </div>
-
-            {previewImage && (
-                <Image
-                    wrapperStyle={{
-                        display: 'none',
-                    }}
-                    preview={{
-                        visible: previewOpen,
-                        onVisibleChange: (visible) => setPreviewOpen(visible),
-                        afterOpenChange: (visible) => !visible && setPreviewImage(''),
-                    }}
-                    src={previewImage}
-                />
-            )}
         </AdminLayout>
     )
 }

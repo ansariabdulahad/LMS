@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'notification',
     'rest_framework_simplejwt',
     'authentication',
+    'course'
 ]
 
 MIDDLEWARE = [
