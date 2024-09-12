@@ -40,7 +40,7 @@ const AdminLayout = ({ children, title = null, toolbar = null }) => {
             'name': 'Students',
         },
         {
-            'label': <Link href={`/admin/files/${session && session.user.user_id}`}>{'Files & Media'}</Link>,
+            'label': <Link href={`/admin/files`}>{'Files & Media'}</Link>,
             'key': '/admin/files',
             'icon': <FileOutlined />,
             'name': 'Files & Media'

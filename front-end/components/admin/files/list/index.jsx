@@ -1,157 +1,106 @@
-import React, { useEffect, useState } from 'react';
-import { Breadcrumb, Button, Dropdown, List } from 'antd';
-import { ArrowLeftOutlined, DeleteOutlined, DownloadOutlined, EditOutlined, FolderFilled, MoreOutlined } from '@ant-design/icons';
-import { usePathname, useRouter } from 'next/navigation';
-import Link from 'next/link';
-import AWS from 'aws-sdk';
-
-const s3 = new AWS.S3();
+import { DeleteFilled } from '@ant-design/icons'
+import { Button, message, Skeleton, Table } from 'antd'
+import React, { useEffect, useState } from 'react'
+import { useSession } from 'next-auth/react';
+import s3 from '@/modules/aws';
+import { DeleteObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import { useSelector } from 'react-redux';
 
 const ListEl = () => {
-    const pathname = usePathname();
-    const router = useRouter();
-    const [loading, setLoading] = useState(false);
-    const [data, setData] = useState([]);
-    const [dir, setDir] = useState(null);
+    const uploadSlice = useSelector(state => state.uploadSlice);
+    const { data: session } = useSession();
+    const [data, setData] = useState(null);
+    const [validate, setValidate] = useState(0);
 
-    // Items constant for dropdown option in list
-    const items = [
+    // columns
+    const columns = [
         {
-            key: '1',
-            label: (
-                <a
-                    className='flex gap-x-2'
-                >
-                    <DownloadOutlined
-                        className='text-violet-600'
-                    />
-                    Download
-                </a>
-            )
+            title: 'File',
+            dataIndex: 'file',
+            key: 'file'
         },
         {
-            key: '2',
-            label: (
-                <a
-                    className='flex gap-x-2'
-                >
-                    <EditOutlined
-                        className='text-green-600'
-                    />
-                    Rename
-                </a>
-            )
+            title: 'Size',
+            dataIndex: 'size',
+            key: 'size'
         },
         {
-            key: '3',
-            label: (
-                <a
-                    className='flex gap-x-2'
-                >
-                    <DeleteOutlined
-                        className='text-rose-600'
-                    />
-                    Delete
-                </a>
-            )
+            title: 'Path',
+            dataIndex: 'path',
+            key: 'path'
+        },
+        {
+            title: 'Last Modified',
+            dataIndex: 'modified',
+            key: 'modified'
+        },
+        {
+            title: 'Action',
+            dataIndex: 'action',
+            key: 'action',
+            render: (_, item) => <Button
+                onClick={() => onDelete(item)}
+                icon={<DeleteFilled />}
+                className='text-rose-500'
+                type='text'
+            />
         }
-    ];
+    ]
 
-    // when pathname is changed working
-    useEffect(() => {
-        if (pathname) {
-            let tmp = pathname.split('/');
-            let path = tmp.splice(3, tmp.length - 1).join('/');
-            setDir(path);
+    // onDelete
+    const onDelete = async (item) => {
+        try {
+            const command = new DeleteObjectCommand({
+                Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET,
+                Key: item.path
+            });
+            await s3.send(command);
+            setValidate(validate + 1);
+            message.success("File deleted successfully");
+        } catch (error) {
+            console.log(error);
+            message.error("Error occurred while deleting");
         }
-    }, [pathname]);
+    }
 
     useEffect(() => {
-        dir && s3.listObjects({
-            Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET,
-            Prefix: dir
-        }, (err, obj) => {
-            console.log(err, data);
-            if (err) return message.error("No data available");
-            setData(obj.Contents);
-        })
-    }, [dir]);
+
+        const readS3List = async () => {
+            const command = new ListObjectsV2Command({
+                Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET,
+                Prefix: (session && session.user.user_id).toString()
+            });
+
+            try {
+                const obj = await s3.send(command);
+
+                const modified = obj && obj?.Contents?.map((item) => {
+                    let tmp = item.Key.split('/');
+                    return {
+                        file: tmp[tmp.length - 1],
+                        path: item.Key,
+                        size: item.Size,
+                        modified: item.LastModified.toLocaleDateString() + " " + item.LastModified.toLocaleTimeString()
+                    }
+                });
+                setData(modified);
+
+            } catch (error) {
+                message.error(error.message);
+            }
+        }
+        readS3List();
+    }, [validate, uploadSlice]);
+
+    if (!data) return <Skeleton active />
 
     return (
-        <div>
-            <div className="flex mt-8 mb-4 justify-between items-center">
-                <Button
-                    icon={<ArrowLeftOutlined />}
-                    onClick={() => router.back()}
-                />
-                <Breadcrumb
-                    items={
-                        dir &&
-                        dir.split('/').map((item, index) => (
-                            index > 2 &&
-                            {
-                                title: <Link href={
-                                    dir &&
-                                    dir.split('/').splice(0, index + 1).join('/')
-                                }>{item}</Link>
-                            }
-                        ))
-                    }
-                />
-            </div>
-            <div
-                id="scrollableDiv"
-                style={{
-                    height: 400,
-                    overflow: 'auto',
-                    padding: '0 16px',
-                    border: '1px solid rgba(140, 140, 140, 0.35)',
-                    backgroundColor: '#fff'
-                }}
-            >
-                <List
-                    dataSource={data}
-                    renderItem={(item) => (
-                        <List.Item key={item.Key}>
-                            <List.Item.Meta
-                                avatar={<FolderFilled className='text-lg text-amber-600' />}
-                                title={
-                                    <a
-                                        href="https://ant.design"
-                                        className='font-semibold'
-                                    >
-                                        {item.Key}
-                                    </a>
-                                }
-                                description={
-                                    <div className='flex gap-x-4 text-xs'>
-                                        <label>
-                                            Size : 128.50 MB
-                                        </label>
-                                        <label>
-                                            Modified : {new Date().toLocaleDateString()}
-                                        </label>
-                                    </div>
-                                }
-                            />
-                            <div>
-                                <Dropdown
-                                    menu={{ items }}
-                                    placement='bottomRight'
-                                    arrow
-                                >
-                                    <Button
-                                        type='text'
-                                        shape='circle'
-                                        icon={<MoreOutlined />}
-                                    />
-                                </Dropdown>
-                            </div>
-                        </List.Item>
-                    )}
-                />
-            </div>
-        </div>
-    );
-};
-export default ListEl;
+        <Table
+            dataSource={data}
+            columns={columns}
+            className='shadow-lg mt-5'
+        />
+    )
+}
+
+export default ListEl

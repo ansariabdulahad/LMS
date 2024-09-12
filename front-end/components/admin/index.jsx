@@ -1,8 +1,7 @@
 'use client';
-import { AlertOutlined, BellOutlined, FileDoneOutlined, LogoutOutlined, MailOutlined, SettingOutlined, UserOutlined, VideoCameraOutlined } from "@ant-design/icons";
+import { AlertOutlined, FileDoneOutlined, UserOutlined, VideoCameraOutlined } from "@ant-design/icons";
 import AdminLayout from "../shared/admin-layout";
-import { Avatar, Badge, Button, Card, Divider, Dropdown, List } from "antd";
-import Link from "next/link";
+import { Avatar, Button, Card, Divider, List } from "antd";
 import dynamic from "next/dynamic";
 
 // use dynamic function to remove window or doc is not define error - we use while using some component

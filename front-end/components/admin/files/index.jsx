@@ -4,7 +4,7 @@ import Uploader from "./upload";
 import { Breadcrumb, Button, Form, Input, Modal } from "antd";
 import { ArrowLeftOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import ListEl from "./list";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 const Files = () => {
 
@@ -14,31 +14,21 @@ const Files = () => {
     // Adding toolbar for Files & Media page
     const Toolbar = () => {
         return (
-            <>
-                <>
-                    <Input
-                        suffix={
-                            <Button
-                                icon={<SearchOutlined />}
-                                type="text"
-                                className="text-gray-200"
-                            />
-                        }
-                        className="border-gray-200 md:w-96"
-                        placeholder="Search Files..."
-                        style={{ borderRadius: 0 }}
-                        size="small"
-                    />
-                    <Button
-                        type="primary"
-                        className="bg-indigo-600"
-                        size="small"
-                        style={{ borderRadius: 0 }}
-                        icon={<PlusOutlined />}
-                        onClick={() => setOpen(true)}
-                    >New Folder</Button>
-                </>
-            </>
+            <Fragment>
+                <Input
+                    suffix={
+                        <Button
+                            icon={<SearchOutlined />}
+                            type="text"
+                            className="text-gray-200"
+                        />
+                    }
+                    className="border-gray-200 md:w-96"
+                    placeholder="Search Files..."
+                    style={{ borderRadius: 0 }}
+                    size="small"
+                />
+            </Fragment>
         )
     }
 
@@ -55,7 +45,7 @@ const Files = () => {
             <div className="md:w-9/12 mx-auto flex flex-col gap-y-6">
                 <Uploader />
                 <div className="flex flex-col gap-y-6">
-                    
+
                     <ListEl />
                 </div>
             </div>
