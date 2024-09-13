@@ -1,44 +1,68 @@
 'use client';
 import AdminLayout from "@/components/shared/admin-layout"
 import { CheckOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { Button, Card, Checkbox, Form, Input, List, message, Select } from "antd";
+import { Button, Card, Checkbox, Empty, Form, Input, List, message, Select } from "antd";
 import { http } from "@/modules/http";
 import { useSession } from "next-auth/react";
+import useSWR, { mutate } from "swr";
 
 const { Option } = Select;
 const { Item } = Form;
 
 const New = () => {
     const [courseForm] = Form.useForm();
+    const [categoryForm] = Form.useForm();
     const { data: session } = useSession();
 
-    // categories added to new curse list
-    const categories = [
-        {
-            name: 'frontend'
-        },
-        {
-            name: 'backend'
-        },
-        {
-            name: 'fullstack'
-        },
-        {
-            name: 'mernstack'
+    // on page load get categories
+    const fetcher = async (url) => {
+        try {
+            const httpReq = http(session && session.user.access);
+            const { data } = await httpReq.get(url);
+            return data;
+        } catch (error) {
+            return null;
         }
-    ]
+    }
+    const { data: categories, error } = useSWR('/category/', fetcher)
 
-    // onfinish form get values
+    // onfinish form get values of creating course
     const onFinish = async (values) => {
         try {
             const httpReq = http(session && session?.user?.access);
-            const { data } = await httpReq.post('/course/private/', values);
-            console.log(data);
+            await httpReq.post('/course/private/', values);
             message.success("Course created successfully");
         } catch (error) {
             message.error("Error occurred while creating course");
         } finally {
-            // courseForm.resetFields();
+            courseForm.resetFields();
+        }
+    }
+
+    // oncategory finished get values of course
+    const onCategory = async (values) => {
+        try {
+            const httpReq = http(session && session.user.access);
+            await httpReq.post('/category/private/', values);
+            mutate('/category/');
+            message.success("Category has been created successfully");
+        } catch (error) {
+            message.error("Error occurred while creating category");
+        } finally {
+            categoryForm.resetFields();
+        }
+
+    }
+
+    // on category delete
+    const onCategoryDel = async (id) => {
+        try {
+            const httpReq = http(session && session.user.access);
+            await httpReq.delete(`/category/${id}/`);
+            message.success("Category deleted successfully");
+            mutate('/category/');
+        } catch (error) {
+            message.error("Error occurred while deleting category");
         }
     }
 
@@ -47,7 +71,7 @@ const New = () => {
             <div className="grid md:grid-cols-3 gap-6">
                 <div>
                     <Card title="Category" className="shadow">
-                        <Form>
+                        <Form onFinish={onCategory} form={categoryForm}>
                             <Item
                                 name={'category'}
                             >
@@ -61,37 +85,38 @@ const New = () => {
                                             icon={<CheckOutlined />}
                                             type="text"
                                             shape="circle"
+                                            htmlType="submit"
                                         />
                                     }
                                 />
                             </Item>
                         </Form>
-
-                        <List
-                            className="demo-loadmore-list"
-                            itemLayout="horizontal"
-                            dataSource={categories}
-                            renderItem={(item) => (
-                                <List.Item
-                                    actions={[
-                                        <Button
-                                            icon={<EditOutlined />}
-                                            shape="circle"
-                                            type="text"
-                                            className="text-blue-600"
-                                        />,
-                                        <Button
-                                            icon={<DeleteOutlined />}
-                                            shape="circle"
-                                            type="text"
-                                            className="text-rose-600"
-                                        />
-                                    ]}
-                                >
-                                    {item.name}
-                                </List.Item>
-                            )}
-                        />
+                        {
+                            categories && categories.length > 0 ? (
+                                <List
+                                    className="demo-loadmore-list capitalize"
+                                    itemLayout="horizontal"
+                                    dataSource={categories}
+                                    renderItem={(item) => (
+                                        <List.Item
+                                            actions={[
+                                                <Button
+                                                    icon={<DeleteOutlined />}
+                                                    shape="circle"
+                                                    type="text"
+                                                    className="text-rose-600"
+                                                    onClick={() => onCategoryDel(item.id)}
+                                                />
+                                            ]}
+                                        >
+                                            {item.category}
+                                        </List.Item>
+                                    )}
+                                />
+                            ) : (
+                                <Empty />
+                            )
+                        }
                     </Card>
                 </div>
                 <div className="md:col-span-2">
@@ -160,12 +185,15 @@ const New = () => {
                                 >
                                     <Select placeholder="Choose Category" size="large">
                                         {
+                                            categories &&
+                                            categories.length > 0 &&
                                             categories.map((item, index) => (
                                                 <Option
                                                     key={index}
-                                                    value={item.name.toLowerCase()}
+                                                    value={item.category.toLowerCase()}
+                                                    className="capitalize"
                                                 >
-                                                    {item.name}
+                                                    {item.category}
                                                 </Option>
                                             ))
                                         }
