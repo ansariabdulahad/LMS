@@ -1,38 +1,17 @@
 'use client';
-import { Button, Dropdown, Table, Tag } from "antd";
+import { Button, Dropdown, message, Table, Tag } from "antd";
 import AdminLayout from "../../shared/admin-layout";
-import { CrownOutlined, DeleteOutlined, EditOutlined, EyeOutlined, FireOutlined, MoreOutlined, PlusOutlined, StarOutlined } from "@ant-design/icons";
+import { ClockCircleOutlined, CrownOutlined, DeleteOutlined, EditOutlined, EyeOutlined, FireOutlined, MoreOutlined, PlusOutlined, StarOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import Image from "next/image";
+import useSWR, { mutate } from "swr";
+import axios from "axios";
+import s3 from "@/modules/aws";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { useSession } from "next-auth/react";
+import { http } from "@/modules/http";
 
-// coursedesign function coding of column course
-const courseDesign = (text, obj) => {
-    return (
-        <div className="flex gap-x-4">
-            <Image
-                src={obj.thumbnail}
-                width={120}
-                height={120}
-                alt={obj.thumbnail}
-            />
-            <div>
-                <Link href={`/admin/courses/${text.split(' ').join('-').toLowerCase()}`}>
-                    <h1 className="capitalize font-semibold text-[16px]">
-                        {text}
-                    </h1>
-                </Link>
-                <div className="flex gap-x-1 items-center">
-                    {obj.level == 'beginner' && <FireOutlined />}
-                    {obj.level == 'intermediate' && <StarOutlined />}
-                    {obj.level == 'advance' && <CrownOutlined />}
-                    <p className="capitalize">
-                        {obj.level}
-                    </p>
-                </div>
-            </div>
-        </div>
-    )
-}
+axios.defaults.baseURL = process.env.NEXT_PUBLIC_ENDPOINT
 
 // action design coding of column action
 const actionDesign = (text, obj) => {
@@ -85,52 +64,110 @@ const actionDesign = (text, obj) => {
     )
 }
 
+// course image handling
+const onCourseImageChange = async (id, access) => {
+    let input = document.createElement('input');
+    input.type = "file";
+    input.click();
+
+    input.onchange = async () => {
+        const file = input.files[0];
+        input.remove();
+
+        // save to s3
+        const params = {
+            Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET,
+            Key: `thumbnail/${Date.now()}/${file.name}`,
+            Body: file,
+            ACL: 'public-read'
+        }
+
+        try {
+            const data = await s3.send(new PutObjectCommand(params));
+            const fileUrl = `https://${params.Bucket}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/${params.Key}`;
+            const httpReq = http(access);
+            await httpReq.put(`/course/${id}/`, { image: fileUrl });
+            mutate('/course/');
+            message.success("Thumbnail uploaded successfully");
+        } catch (error) {
+            console.log(error);
+
+            message.error(error.message);
+        }
+    }
+}
+
 const Courses = () => {
 
-    // Table coding for courses
-    const dataSource = [
-        {
-            key: '1',
-            title: 'Node JS',
-            thumbnail: '/images/node.png',
-            level: 'beginner',
-            students: 12356,
-            rating: 4.5,
-            status: 'live',
-            action: ''
-        },
-        {
-            key: '2',
-            title: 'Laravel',
-            thumbnail: '/images/laravel.png',
-            level: 'intermediate',
-            students: 520113,
-            rating: 3.5,
-            status: 'pending',
-            action: ''
-        },
-        {
-            key: '3',
-            title: 'Node JS',
-            thumbnail: '/images/node.png',
-            level: 'advance',
-            students: 12356,
-            rating: 4.9,
-            status: 'live',
-            action: ''
-        },
-        {
-            key: '4',
-            title: 'Node JS',
-            thumbnail: '/images/node.png',
-            level: 'beginner',
-            students: 12356,
-            rating: 2.5,
-            status: 'live',
-            action: ''
-        }
-    ];
+    const { data: session } = useSession();
 
+    const fetcher = async (url) => {
+        try {
+            const { data } = await axios.get(url);
+            return data
+        } catch (error) {
+            return null;
+        }
+    }
+
+    const { data: courseData, error } = useSWR('/course/', fetcher);
+
+    // coursedesign function coding of column course
+    const courseDesign = (text, obj) => {
+        return (
+            <div className="flex gap-x-4">
+                <button onClick={() => onCourseImageChange(obj.id, session && session.user.access)}>
+                    {
+                        obj.image ? (
+                            <Image
+                                src={obj.image}
+                                width={150}
+                                height={30}
+                                alt={obj.title}
+                            />
+                        ) : (
+                            <Image
+                                src={'/images/placeholder.png'}
+                                width={150}
+                                height={100}
+                                alt={obj.title}
+                            />
+                        )
+                    }
+                </button>
+                <div>
+                    <Link href={`/admin/courses/${text.split(' ').join('-').toLowerCase()}`}>
+                        <h1 className="capitalize font-semibold text-[16px]">
+                            {text}
+                        </h1>
+                    </Link>
+                    <div className="flex gap-x-4 items-center">
+                        <div className="flex gap-x-1">
+                            {obj.level == 'beginner' && <FireOutlined />}
+                            {obj.level == 'intermediate' && <StarOutlined />}
+                            {obj.level == 'advanced' && <CrownOutlined />}
+                            <p className="capitalize">
+                                {obj.level}
+                            </p>
+                        </div>
+                        <div className="flex gap-x-1">
+                            <ClockCircleOutlined />
+                            <p className="capitalize">
+                                {obj.duration}
+                            </p>
+                            <p className="capitalize">
+                                {obj.durationIn}
+                            </p>
+                        </div>
+                        <p>&#8377;{obj.price}</p>
+                    </div>
+                    <p>{obj.description.slice(0, 50)}...</p>
+                </div>
+            </div>
+        )
+    }
+
+    // Table coding for courses
     const columns = [
         {
             title: 'Courses',
@@ -140,21 +177,27 @@ const Courses = () => {
             // render: (text, obj) => <p className="text-rose-600">{text}</p> // if u want to edit column use render function.
         },
         {
-            title: 'Students',
-            dataIndex: 'students',
-            key: 'students',
-            render: (text) => text.toLocaleString('en-US')
-        },
-        {
-            title: 'Rating',
-            dataIndex: 'rating',
-            key: 'rating'
-        },
-        {
             title: 'Status',
             dataIndex: 'status',
             key: 'status',
-            render: (text) => <Tag color="tomato" className="capitalize">{text}</Tag>
+            render: (text, obj) => (
+                <div className="flex gap-x-2">
+                    {
+                        obj.live ? (
+                            <Tag color="tomato" className="capitalize">Live</Tag>
+                        ) : (
+                            <Tag color="green" className="capitalize">Completed</Tag>
+                        )
+                    }
+                    {
+                        obj.free ? (
+                            <Tag color="green" className="capitalize">Free</Tag>
+                        ) : (
+                            <Tag color="tomato" className="capitalize">Not Free</Tag>
+                        )
+                    }
+                </div>
+            )
         },
         {
             title: 'Action',
@@ -184,7 +227,7 @@ const Courses = () => {
         >
             <div>
                 <Table
-                    dataSource={dataSource}
+                    dataSource={courseData ? courseData : []}
                     columns={columns}
                     scroll={{
                         x: 1500,

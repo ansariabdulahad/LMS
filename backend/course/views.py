@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.exceptions import ValidationError
 from package.permissions import IsAdmin
+from rest_framework.permissions import IsAuthenticated
 from .models import Course
 from .serializers import CourseSerializer
 
@@ -19,7 +20,7 @@ class CourseList(APIView):
 
 # To add new course
 class CourseAdd(APIView):
-    permission_classes = [IsAdmin] # to protect this route access, only admin can use
+    permission_classes = [IsAuthenticated, IsAdmin] # to protect this route access, only admin can use
 
     def post(self, req):
         try:
@@ -40,7 +41,7 @@ class CourseAdd(APIView):
 
 # to perform some actions
 class CourseAction(APIView):
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     def put(self, req, id):
         try:

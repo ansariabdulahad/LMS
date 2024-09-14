@@ -145,13 +145,14 @@ const AdminLayout = ({ children, title = null, toolbar = null }) => {
         return items;
     }
 
+    // comment this for development phase also write this code in useeffect when uncommenting
     // check session and handle logic accordingly
-    if (session) {
-        if (session && session?.user?.userType !== 'admin')
-            return redirect('/');
-    } else {
-        return redirect('/login');
-    }
+    // if (session) {
+    //     if (session && session?.user?.userType !== 'admin')
+    //         return redirect('/');
+    // } else {
+    //     return redirect('/login');
+    // }
 
     return (
         <Layout>

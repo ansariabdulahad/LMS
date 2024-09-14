@@ -5,9 +5,14 @@ import { Button, Card, Checkbox, Empty, Form, Input, List, message, Select } fro
 import { http } from "@/modules/http";
 import { useSession } from "next-auth/react";
 import useSWR, { mutate } from "swr";
+import axios from "axios";
 
 const { Option } = Select;
 const { Item } = Form;
+
+// setting base url using axios
+const { NEXT_PUBLIC_ENDPOINT } = process.env;
+axios.defaults.baseURL = NEXT_PUBLIC_ENDPOINT || "http://localhost:8000";
 
 const New = () => {
     const [courseForm] = Form.useForm();
@@ -17,8 +22,8 @@ const New = () => {
     // on page load get categories
     const fetcher = async (url) => {
         try {
-            const httpReq = http(session && session.user.access);
-            const { data } = await httpReq.get(url);
+            // const httpReq = http(session && session.user.access);
+            const { data } = await axios.get(url);
             return data;
         } catch (error) {
             return null;
@@ -126,7 +131,7 @@ const New = () => {
                             onFinish={onFinish}
                             form={courseForm}
                         >
-                            <div className="md:flex gap-x-6">
+                            <div className="grid md:grid-cols-3 gap-x-4">
                                 <Item
                                     label="Course Title"
                                     name={'title'}
@@ -142,6 +147,23 @@ const New = () => {
                                         placeholder="React JS"
                                         size="large"
                                     />
+                                </Item>
+                                <Item
+                                    label="Level"
+                                    name={'level'}
+                                    className="w-full"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Level is required'
+                                        }
+                                    ]}
+                                >
+                                    <Select placeholder="Choose Level" size="large">
+                                        <Option value="beginner">Beginner</Option>
+                                        <Option value="intermediate">Intermediate</Option>
+                                        <Option value="advanced">Advanced</Option>
+                                    </Select>
                                 </Item>
                                 <Item
                                     label="Course Duration"
