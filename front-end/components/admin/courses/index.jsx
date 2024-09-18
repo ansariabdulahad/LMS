@@ -92,7 +92,7 @@ const Courses = () => {
                     }
                 </button>
                 <div>
-                    <Link href={`/admin/courses/${text.split(' ').join('-').toLowerCase()}`}>
+                    <Link href={`/admin/courses/${text.split(' ').join('-').toLowerCase()}?id=${obj.id}`}>
                         <h1 className="capitalize font-semibold text-[16px]">
                             {text}
                         </h1>
@@ -147,14 +147,13 @@ const Courses = () => {
 
     // action design coding of column action
     const actionDesign = (text, obj) => {
-
         const items = [
             {
                 key: '1',
                 label:
                     <Link
                         legacyBehavior
-                        href={`/admin/courses/${obj.title.split(' ').join('-').toLowerCase()}`}
+                        href={`/admin/courses/${obj.title.split(' ').join('-').toLowerCase()}?id=${obj.id}`}
                     >
                         <a className="flex items-center gap-x-2">
                             <EyeOutlined className="text-violet-500" />

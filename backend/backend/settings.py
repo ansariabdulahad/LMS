@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'authentication',
     'course',
-    'category'
+    'category',
+    'topic'
 ]
 
 MIDDLEWARE = [
