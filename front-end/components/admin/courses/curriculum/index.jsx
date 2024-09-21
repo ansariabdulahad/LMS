@@ -1,16 +1,19 @@
 'use client';
 import AdminLayout from "@/components/shared/admin-layout";
 import { CaretRightOutlined, DeleteFilled, EditFilled, PlusOutlined } from "@ant-design/icons";
-import { Button, Collapse, Drawer, Modal, Table, theme } from "antd";
+import { Button, Collapse, Drawer, Form, Input, message, Modal, Table, theme } from "antd";
 import { useParams, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import Uploader from "../../files/upload";
 import ListEl from "../../files/list";
 import axios from "axios";
 import { http } from "@/modules/http";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
+import moment from "moment";
+import { useSession } from "next-auth/react";
 
 axios.defaults.baseURL = process.env.NEXT_PUBLIC_ENDPOINT || "http://127.0.0.1:8000";
+const { Item, useForm } = Form;
 
 const fetcher = async (url) => {
     try {
@@ -23,10 +26,13 @@ const fetcher = async (url) => {
 
 const Curriculum = () => {
     // Hooks collection functions
+    const { data: session } = useSession();
     const { curriculum } = useParams();
     const searchParams = useSearchParams();
     const courseId = searchParams.get('id');
+    const [topicForm] = useForm();
     // State collection
+    const [editTopic, setEditTopic] = useState(null);
     const [open, setOpen] = useState(false);
     const [drawerOpen, setDrawerOpen] = useState({
         open: false,
@@ -38,6 +44,56 @@ const Curriculum = () => {
         courseId ? fetcher : null
     )
 
+    // delete topic 
+    const onDeleteTopic = async (id) => {
+        try {
+            const httpReq = http(session && session.user.access);
+            await httpReq.delete(`/topic/${id}/`);
+            message.success("Topic deleted successfully");
+            mutate(`/topic/course/${courseId}/`);
+        } catch (error) {
+            message.error("Unable to delete topic");
+        }
+    }
+
+    // add topic or update
+    const onTopicAddOrUpdate = async (values) => {
+        values.courseId = courseId;
+        const httpReq = http(session && session.user.access);
+
+        if (editTopic === null) {
+            try {
+                await httpReq.post('/topic/private/', values);
+                topicForm.resetFields();
+                setOpen(false);
+                message.success("Topic added successfully");
+                mutate(`/topic/course/${courseId}/`);
+            } catch (error) {
+                message.error("Unable to add topic");
+            }
+        } else {
+            try {
+                await httpReq.put(`/topic/${editTopic.id}/`, values);
+                topicForm.resetFields();
+                setEditTopic(null);
+                setOpen(false);
+                message.success("Topic updated successfully");
+                mutate(`/topic/course/${courseId}/`);
+            } catch (error) {
+                console.log(error);
+                message.error("Unable to update topic");
+            }
+
+        }
+    }
+
+    // edit topic
+    const onTopicEdit = async (obj) => {
+        setOpen(true);
+        setEditTopic(obj);
+        topicForm.setFieldsValue(obj);
+    }
+
     const columns = [
         {
             title: 'Topics',
@@ -46,6 +102,7 @@ const Curriculum = () => {
             render: (text) =>
                 <a
                     href="#"
+                    className="capitalize"
                     onClick={() =>
                         setDrawerOpen({
                             title: text,
@@ -59,21 +116,26 @@ const Curriculum = () => {
             title: 'Date',
             dataIndex: 'createdAt',
             key: 'createdAt',
+            render: (text) => (
+                <label>{moment(text).format('DD-MM-YY HH:MM:SS A')}</label>
+            )
         },
         {
             title: 'Actions',
             key: 'actions',
-            render: () => (
+            render: (_, obj) => (
                 <div className="flex gap-x-4">
                     <Button
                         icon={<EditFilled />}
                         type="text"
                         className="bg-indigo-50 text-indigo-500"
+                        onClick={() => onTopicEdit(obj)}
                     />
                     <Button
                         icon={<DeleteFilled />}
                         type="text"
                         className="bg-rose-50 text-rose-500"
+                        onClick={() => onDeleteTopic(obj.id)}
                     />
                 </div>
             )
@@ -228,9 +290,40 @@ const Curriculum = () => {
 
             <Modal
                 open={open}
-                onCancel={() => setOpen(false)}
+                onCancel={() => {
+                    setOpen(false)
+                    setEditTopic(null)
+                    topicForm.resetFields()
+                }}
+                footer={null}
+                title="Add New Topic"
             >
-                <h1>Testing modal</h1>
+
+                <Form
+                    layout="vertical"
+                    onFinish={onTopicAddOrUpdate}
+                    form={topicForm}
+                >
+                    <Item
+                        label="Title"
+                        name="title"
+                        rules={[{ require: true }]}
+                    >
+                        <Input
+                            size="large"
+                        />
+                    </Item>
+                    <Item>
+                        <Button
+                            className={`text-white w-full ${editTopic ? 'bg-rose-500' : 'bg-blue-500'}`}
+                            size="large"
+                            htmlType="submit"
+                        >
+                            {editTopic ? "Update Topic" : "Submit"}
+                        </Button>
+                    </Item>
+                </Form>
+
             </Modal>
 
             <Drawer

@@ -68,7 +68,7 @@ const ListEl = () => {
         const readS3List = async () => {
             const command = new ListObjectsV2Command({
                 Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET,
-                Prefix: (session && session.user.user_id).toString()
+                Prefix: (session && session?.user?.user_id).toString()
             });
 
             try {
@@ -99,6 +99,10 @@ const ListEl = () => {
             dataSource={data}
             columns={columns}
             className='shadow-lg mt-5'
+            scroll={{
+                x: 1500,
+                y: 1200
+            }}
         />
     )
 }
