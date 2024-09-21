@@ -1,9 +1,9 @@
 'use client';
 import AdminLayout from "@/components/shared/admin-layout";
 import { CaretRightOutlined, DeleteFilled, EditFilled, PlusOutlined } from "@ant-design/icons";
-import { Button, Collapse, Drawer, Form, Input, message, Modal, Table, theme } from "antd";
+import { Button, Collapse, Drawer, Form, Input, List, message, Modal, Table, theme } from "antd";
 import { useParams, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Uploader from "../../files/upload";
 import ListEl from "../../files/list";
 import axios from "axios";
@@ -11,6 +11,8 @@ import { http } from "@/modules/http";
 import useSWR, { mutate } from "swr";
 import moment from "moment";
 import { useSession } from "next-auth/react";
+import { useDispatch, useSelector } from "react-redux";
+import { resetFile } from "@/redux/slices/file.slice";
 
 axios.defaults.baseURL = process.env.NEXT_PUBLIC_ENDPOINT || "http://127.0.0.1:8000";
 const { Item, useForm } = Form;
@@ -26,6 +28,8 @@ const fetcher = async (url) => {
 
 const Curriculum = () => {
     // Hooks collection functions
+    const fileSlice = useSelector(state => state.fileSlice);
+    const dispatch = useDispatch();
     const { data: session } = useSession();
     const { curriculum } = useParams();
     const searchParams = useSearchParams();
@@ -35,12 +39,15 @@ const Curriculum = () => {
     // State collection
     const [editTopic, setEditTopic] = useState(null);
     const [lessonModal, setLessonModal] = useState(false);
+    const [lessonId, setLessonId] = useState(null);
+    const [key, setKey] = useState(null);
     const [open, setOpen] = useState(false);
     const [drawerOpen, setDrawerOpen] = useState({
         topicId: null,
         open: false,
         title: null
     });
+    const [lessons, setLessons] = useState([]);
 
     const { data: topics, error: topicError } = useSWR(
         courseId ? `/topic/course/${courseId}/` : null,
@@ -97,6 +104,25 @@ const Curriculum = () => {
         topicForm.setFieldsValue(obj);
     }
 
+    // onDrawer coding for lesson
+    const onDrawer = async (text, obj) => {
+        setDrawerOpen({
+            topicId: obj.id,
+            title: text,
+            open: true
+        })
+
+        try {
+            const httpReq = http(session && session.user.access)
+            const { data } = await httpReq.get(`/lesson/topic/${obj.id}/`);
+            setLessons(data);
+
+        } catch (error) {
+            console.log(error);
+            message.error(error.message)
+        }
+    }
+
     const columns = [
         {
             title: 'Topics',
@@ -106,13 +132,7 @@ const Curriculum = () => {
                 <a
                     href="#"
                     className="capitalize"
-                    onClick={() =>
-                        setDrawerOpen({
-                            topicId: obj.id,
-                            title: text,
-                            open: true
-                        })
-                    }>
+                    onClick={() => onDrawer(text, obj)}>
                     {text}
                 </a>
         },
@@ -163,56 +183,44 @@ const Curriculum = () => {
     }
 
     // lessoncontent component used in lesson component
-    const LessonContent = () => {
+    const LessonContent = ({ obj }) => {
         // hooks collection for lesson component
         const [fileDialog, setFileDialog] = useState(false);
 
-        const lessonDataSource = [
-            {
-                key: '1',
-                name: 'Mike',
-                age: 32,
-                address: '10 Downing Street',
-            },
-            {
-                key: '2',
-                name: 'John',
-                age: 42,
-                address: '10 Downing Street',
-            },
-        ];
+        // onmeia conding
+        const onMedia = (id, key) => {
+            setFileDialog(true);
+            setLessonId(id);
+            setKey(key);
 
-        const lessonColumns = [
-            {
-                title: 'Name',
-                dataIndex: 'name',
-                key: 'name',
-            },
-            {
-                title: 'Age',
-                dataIndex: 'age',
-                key: 'age',
-            },
-            {
-                title: 'Address',
-                dataIndex: 'address',
-                key: 'address',
-            },
-        ];
+        }
 
         return (
-            <div className="shadow-lg flex flex-col gap-y-6">
-                <Table
-                    dataSource={lessonDataSource}
-                    columns={lessonColumns}
-                    pagination={false}
-                />
+            <div className="flex flex-col gap-y-6">
+                <List>
+                    <List.Item>
+                        <p><b>Video: </b>{obj.videoUrl}</p>
+                        <Button
+                            icon={<PlusOutlined />}
+                            className="bg-green-500 text-white"
+                            onClick={() => onMedia(obj.id, 'videoUrl')}
+                        />
+                    </List.Item>
+                    <List.Item>
+                        <p><b>Assets: </b>{obj.accest}</p>
+                        <Button
+                            icon={<PlusOutlined />}
+                            className="bg-green-500 text-white"
+                            onClick={() => onMedia(obj.id, 'accest')}
+                        />
+                    </List.Item>
+                </List>
                 <Button
                     icon={<PlusOutlined />}
                     type="primary"
                     className="bg-green-500 w-fit mx-3 mb-3"
                     style={{ borderRadius: 0 }}
-                    onClick={() => setFileDialog(true)}
+                    onClick={() => onMedia(obj.id)}
                 >
                     Media
                 </Button>
@@ -242,38 +250,36 @@ const Curriculum = () => {
             border: '1px solid #f2f2f2',
         };
 
-        const getItems = (panelStyle) => [
-            {
-                key: '1',
-                label: 'This is panel header 1',
-                children: <LessonContent />,
-                style: panelStyle,
-            },
-            {
-                key: '2',
-                label: 'This is panel header 2',
-                children: <LessonContent />,
-                style: panelStyle,
-            },
-            {
-                key: '3',
-                label: 'This is panel header 3',
-                children: <LessonContent />,
-                style: panelStyle,
-            },
-        ];
-
         return (
             <Collapse
                 bordered={false}
-                defaultActiveKey={['1']}
+                defaultActiveKey={[]}
                 expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
                 style={{
                     background: token.colorBgContainer,
                 }}
-                items={getItems(panelStyle)}
+                items={
+                    lessons && lessons.length > 0 ? (
+                        lessons.map((item, index) => (
+                            {
+                                key: index,
+                                label: item.title,
+                                children: <LessonContent obj={item} />,
+                                style: panelStyle
+                            }
+                        ))
+                    ) : (null)
+                }
             />
         )
+    }
+
+    // ondrawer close code
+    const onDrawerClose = () => {
+        setDrawerOpen({ ...drawerOpen, open: false, topicId: null });
+        setLessonId(null);
+        setLessons([]);
+        dispatch(resetFile());
     }
 
     // add lesson 
@@ -281,7 +287,8 @@ const Curriculum = () => {
         try {
             values.topicId = drawerOpen.topicId;
             const httpReq = http(session && session.user.access)
-            await httpReq.post('/lesson/private/', values);
+            const { data } = await httpReq.post('/lesson/private/', values);
+            setLessons([...lessons, data]);
             message.success("Topic created successfully");
         } catch (error) {
             console.log(error);
@@ -291,6 +298,23 @@ const Curriculum = () => {
             setLessonModal(false);
         }
     }
+
+    useEffect(() => {
+        const req = async () => {
+            try {
+                const httpReq = http(session && session.user.access);
+                await httpReq.put(`/lesson/${lessonId}/`, { [key]: fileSlice.path });
+                message.success("File saved successfully");
+            } catch (error) {
+                message.error(error.message);
+            } finally {
+                setKey(false);
+                onDrawerClose();
+            }
+        }
+
+        if (fileSlice) req();
+    }, [fileSlice]);
 
     return (
 
@@ -349,7 +373,7 @@ const Curriculum = () => {
 
             <Drawer
                 title={drawerOpen.title}
-                onClose={() => setDrawerOpen({ ...drawerOpen, open: false, topicId: null })}
+                onClose={onDrawerClose}
                 open={drawerOpen.open}
                 width={920}
                 extra={
@@ -388,6 +412,12 @@ const Curriculum = () => {
                     <Item
                         label="Video URL"
                         name={'videoUrl'}
+                    >
+                        <Input size="large" />
+                    </Item>
+                    <Item
+                        label="Assets"
+                        name={'accest'}
                     >
                         <Input size="large" />
                     </Item>
