@@ -1,16 +1,23 @@
-import { DeleteFilled } from '@ant-design/icons'
+import { CheckCircleFilled, DeleteFilled } from '@ant-design/icons'
 import { Button, message, Skeleton, Table } from 'antd'
-import React, { useEffect, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react';
 import s3 from '@/modules/aws';
 import { DeleteObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setFile } from '@/redux/slices/file.slice';
 
-const ListEl = () => {
+const ListEl = ({ select }) => {
+    const dispatch = useDispatch();
     const uploadSlice = useSelector(state => state.uploadSlice);
     const { data: session } = useSession();
     const [data, setData] = useState(null);
     const [validate, setValidate] = useState(0);
+
+    // onselect
+    const onselect = (item) => {
+        dispatch(setFile(item));
+    }
 
     // columns
     const columns = [
@@ -38,12 +45,26 @@ const ListEl = () => {
             title: 'Action',
             dataIndex: 'action',
             key: 'action',
-            render: (_, item) => <Button
-                onClick={() => onDelete(item)}
-                icon={<DeleteFilled />}
-                className='text-rose-500'
-                type='text'
-            />
+            render: (_, item) => (
+                <Fragment>
+                    <Button
+                        onClick={() => onDelete(item)}
+                        icon={<DeleteFilled />}
+                        className='text-rose-500'
+                        type='text'
+                    />
+                    {
+                        select && (
+                            <Button
+                                onClick={() => onselect(item)}
+                                icon={<CheckCircleFilled />}
+                                className='text-indigo-500'
+                                type='text'
+                            />
+                        )
+                    }
+                </Fragment>
+            )
         }
     ]
 

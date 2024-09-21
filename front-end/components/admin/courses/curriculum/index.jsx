@@ -31,10 +31,13 @@ const Curriculum = () => {
     const searchParams = useSearchParams();
     const courseId = searchParams.get('id');
     const [topicForm] = useForm();
+    const [lessonForm] = useForm();
     // State collection
     const [editTopic, setEditTopic] = useState(null);
+    const [lessonModal, setLessonModal] = useState(false);
     const [open, setOpen] = useState(false);
     const [drawerOpen, setDrawerOpen] = useState({
+        topicId: null,
         open: false,
         title: null
     });
@@ -99,12 +102,13 @@ const Curriculum = () => {
             title: 'Topics',
             dataIndex: 'title',
             key: 'title',
-            render: (text) =>
+            render: (text, obj) =>
                 <a
                     href="#"
                     className="capitalize"
                     onClick={() =>
                         setDrawerOpen({
+                            topicId: obj.id,
                             title: text,
                             open: true
                         })
@@ -217,10 +221,11 @@ const Curriculum = () => {
                     open={fileDialog}
                     onCancel={() => setFileDialog(false)}
                     footer={false}
+                    width={1000}
                 >
                     <div className="flex flex-col gap-y-6 mt-6">
                         <Uploader />
-                        <ListEl />
+                        <ListEl select={true} />
                     </div>
                 </Modal>
             </div>
@@ -271,6 +276,22 @@ const Curriculum = () => {
         )
     }
 
+    // add lesson 
+    const onLessonCreate = async (values) => {
+        try {
+            values.topicId = drawerOpen.topicId;
+            const httpReq = http(session && session.user.access)
+            await httpReq.post('/lesson/private/', values);
+            message.success("Topic created successfully");
+        } catch (error) {
+            console.log(error);
+            message.error("Unable to create new lesson");
+        } finally {
+            lessonForm.resetFields();
+            setLessonModal(false);
+        }
+    }
+
     return (
 
         <AdminLayout
@@ -307,7 +328,7 @@ const Curriculum = () => {
                     <Item
                         label="Title"
                         name="title"
-                        rules={[{ require: true }]}
+                        rules={[{ required: true }]}
                     >
                         <Input
                             size="large"
@@ -328,7 +349,7 @@ const Curriculum = () => {
 
             <Drawer
                 title={drawerOpen.title}
-                onClose={() => setDrawerOpen({ ...drawerOpen, open: false })}
+                onClose={() => setDrawerOpen({ ...drawerOpen, open: false, topicId: null })}
                 open={drawerOpen.open}
                 width={920}
                 extra={
@@ -337,6 +358,7 @@ const Curriculum = () => {
                         type="primary"
                         className="bg-violet-500 text-white"
                         style={{ borderRadius: 0 }}
+                        onClick={() => setLessonModal(true)}
                     >
                         Add Lesson
                     </Button>
@@ -344,6 +366,40 @@ const Curriculum = () => {
             >
                 <Lessons />
             </Drawer>
+
+            <Modal
+                title="New Lesson"
+                footer={null}
+                open={lessonModal}
+                onCancel={() => setLessonModal(false)}
+            >
+                <Form
+                    layout="vertical"
+                    form={lessonForm}
+                    onFinish={onLessonCreate}
+                >
+                    <Item
+                        label="Title"
+                        name={'title'}
+                        rules={[{ required: true }]}
+                    >
+                        <Input size="large" />
+                    </Item>
+                    <Item
+                        label="Video URL"
+                        name={'videoUrl'}
+                    >
+                        <Input size="large" />
+                    </Item>
+                    <Item>
+                        <Button
+                            htmlType="submit"
+                            size="large"
+                            className="bg-blue-500 text-white w-full"
+                        >Submit</Button>
+                    </Item>
+                </Form>
+            </Modal>
         </AdminLayout>
     );
 };

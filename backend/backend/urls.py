@@ -7,5 +7,6 @@ urlpatterns = [
     path('auth/', include('authentication.urls')),
     path('course/', include('course.urls')),
     path('category/', include('category.urls')),
-    path('topic/', include('topic.urls'))
+    path('topic/', include('topic.urls')),
+    path('lesson/', include('lesson.urls'))
 ]
