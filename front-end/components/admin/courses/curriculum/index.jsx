@@ -48,6 +48,7 @@ const Curriculum = () => {
         title: null
     });
     const [lessons, setLessons] = useState([]);
+    const [editLesson, setEditLesson] = useState(null);
 
     const { data: topics, error: topicError } = useSWR(
         courseId ? `/topic/course/${courseId}/` : null,
@@ -182,6 +183,25 @@ const Curriculum = () => {
         );
     }
 
+    // onLesson delete function
+    const onLessonDelete = async (id) => {
+        try {
+            const httpReq = http(session && session.user.access);
+            await httpReq.delete(`/lesson/${id}/`);
+            message.success("Lesson deleted successfully");
+            onDrawerClose();
+        } catch (error) {
+            message.error(error.message);
+        }
+    }
+
+    // onLesson edit function
+    const onLessonEdit = (item) => {
+        setLessonModal(true);
+        lessonForm.setFieldsValue(item);
+        setEditLesson(item);
+    }
+
     // lessoncontent component used in lesson component
     const LessonContent = ({ obj }) => {
         // hooks collection for lesson component
@@ -192,13 +212,12 @@ const Curriculum = () => {
             setFileDialog(true);
             setLessonId(id);
             setKey(key);
-
         }
 
         return (
-            <div className="flex flex-col gap-y-6">
+            <div className="flex flex-col gap-y-6 shadow rounded-sm p-4 bg-blue-50">
                 <List>
-                    <List.Item>
+                    <List.Item className="p-2">
                         <p><b>Video: </b>{obj.videoUrl}</p>
                         <Button
                             icon={<PlusOutlined />}
@@ -206,7 +225,7 @@ const Curriculum = () => {
                             onClick={() => onMedia(obj.id, 'videoUrl')}
                         />
                     </List.Item>
-                    <List.Item>
+                    <List.Item className="p-2">
                         <p><b>Assets: </b>{obj.accest}</p>
                         <Button
                             icon={<PlusOutlined />}
@@ -214,16 +233,19 @@ const Curriculum = () => {
                             onClick={() => onMedia(obj.id, 'accest')}
                         />
                     </List.Item>
+                    <div className="flex gap-x-2 items-end justify-end mt-3">
+                        <Button
+                            icon={<DeleteFilled />}
+                            className="bg-red-600 text-white"
+                            onClick={() => onLessonDelete(obj.id)}
+                        />
+                        <Button
+                            icon={<EditFilled />}
+                            className="bg-blue-600 text-white"
+                            onClick={() => onLessonEdit(obj)}
+                        />
+                    </div>
                 </List>
-                <Button
-                    icon={<PlusOutlined />}
-                    type="primary"
-                    className="bg-green-500 w-fit mx-3 mb-3"
-                    style={{ borderRadius: 0 }}
-                    onClick={() => onMedia(obj.id)}
-                >
-                    Media
-                </Button>
 
                 <Modal
                     open={fileDialog}
@@ -253,7 +275,7 @@ const Curriculum = () => {
         return (
             <Collapse
                 bordered={false}
-                defaultActiveKey={[]}
+                defaultActiveKey={['0']}
                 expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
                 style={{
                     background: token.colorBgContainer,
@@ -291,12 +313,28 @@ const Curriculum = () => {
             setLessons([...lessons, data]);
             message.success("Topic created successfully");
         } catch (error) {
-            console.log(error);
             message.error("Unable to create new lesson");
         } finally {
             lessonForm.resetFields();
             setLessonModal(false);
         }
+    }
+
+    // lesson update
+    const onLessonUpdate = async (values) => {
+        try {
+            const httpReq = http(session && session.user.access);
+            await httpReq.put(`/lesson/${editLesson.id}/`, values);
+            message.success("Lesson updated successfully");
+        } catch (error) {
+            message.error(error.message);
+        } finally {
+            setEditLesson(null);
+            lessonForm.resetFields();
+            setLessonModal(false);
+            onDrawerClose();
+        }
+
     }
 
     useEffect(() => {
@@ -400,7 +438,7 @@ const Curriculum = () => {
                 <Form
                     layout="vertical"
                     form={lessonForm}
-                    onFinish={onLessonCreate}
+                    onFinish={editLesson ? onLessonUpdate : onLessonCreate}
                 >
                     <Item
                         label="Title"
@@ -426,7 +464,9 @@ const Curriculum = () => {
                             htmlType="submit"
                             size="large"
                             className="bg-blue-500 text-white w-full"
-                        >Submit</Button>
+                        >
+                            {editLesson ? 'Update Lesson' : 'Submit'}
+                        </Button>
                     </Item>
                 </Form>
             </Modal>
