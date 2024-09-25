@@ -4,6 +4,7 @@ from django.db import models
 class Course(models.Model):
     title = models.CharField(max_length=200)
     category = models.CharField(max_length=100)
+    courseType = models.CharField(max_length=50, null=True)
     level = models.CharField(max_length=100, null=True)
     duration = models.CharField()
     durationIn = models.CharField(max_length=50)

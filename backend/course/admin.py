@@ -7,6 +7,7 @@ class CourseModel(admin.ModelAdmin):
         'id',
         'title',
         'category',
+        'courseType',
         'level',
         'duration',
         'durationIn',

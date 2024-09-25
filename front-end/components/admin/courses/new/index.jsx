@@ -222,6 +222,29 @@ const New = () => {
                                     </Select>
                                 </Item>
                                 <Item
+                                    label="Course Type"
+                                    name={'courseType'}
+                                    className="w-full"
+                                    rules={[
+                                        {
+                                            required: true,
+                                        }
+                                    ]}
+                                >
+                                    <Select placeholder="Choose Course Type" size="large">
+                                        <Option
+                                            value={'normal'}
+                                        >
+                                            Normal
+                                        </Option>
+                                        <Option
+                                            value={'trending'}
+                                        >
+                                            Trending
+                                        </Option>
+                                    </Select>
+                                </Item>
+                                <Item
                                     label="Price"
                                     name={'price'}
                                     className="w-full"
