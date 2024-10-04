@@ -178,7 +178,7 @@ const Curriculum = () => {
                 size="large"
                 onClick={() => setOpen(true)}
             >
-                Add Section
+                Add Topics
             </Button>
         );
     }

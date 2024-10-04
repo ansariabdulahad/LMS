@@ -56,7 +56,7 @@ const CourseList = ({ data }) => {
                                         </Button>
                                     </div>
 
-                                    <Link href={`/courses/${item.id}/`}>
+                                    <Link href={`/courses/${item.title.split(/[\s|]+/).join('-').toLowerCase()}?id=${item.id}`}>
                                         <Button
                                             type='primary'
                                             className='w-full mb-2 font-semibold bg-purple-500'
@@ -73,10 +73,10 @@ const CourseList = ({ data }) => {
                                 </div>
                             }
                         />
-                    </Card>
+                    </Card >
                 ))
             }
-        </div>
+        </div >
     )
 }
 
